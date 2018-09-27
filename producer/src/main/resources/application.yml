@@ -1,0 +1,20 @@
+server:
+  port: 7877
+spring:
+  datasource.dbcp2:
+    driver-class-name: org.postgresql.Driver
+#    username: ${POSTGRES_USER}
+#    password: ${POSTGRES_PASSWORD}
+    username: postgres
+    password: 123
+    url: "jdbc:postgresql://192.168.0.50:5432/kinoman-demo"
+    initial-size: 0
+    max-total: 12
+    max-idle: 12
+#  data:
+#    elasticsearch:
+#      cluster-nodes: localhost:9300
+banner:
+  location: banner.txt
+file:
+  uploadDir: ./uploads
