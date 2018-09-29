@@ -1,0 +1,5 @@
+package uz.oltinolma.producer.security.auth.jwt.extractor;
+
+public interface TokenExtractor {
+    String extract(String payload);
+}

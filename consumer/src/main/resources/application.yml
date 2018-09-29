@@ -1,0 +1,18 @@
+server:
+  port: 8787
+#rabbit mq config
+rabbitmq:
+  host: localhost
+  username: admin
+  password: qazwsx123
+  port: 5672
+#database
+spring.datasource.dbcp2:
+  driver-class-name: org.postgresql.Driver
+  username: postgres
+  password: postgres
+  url: "jdbc:postgresql://localhost:5432/demo-kinoman"
+  initial-size: 0
+  max-total: 12
+  max-idle: 12
+
