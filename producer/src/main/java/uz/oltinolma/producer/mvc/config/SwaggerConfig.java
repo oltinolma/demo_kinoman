@@ -1,4 +1,4 @@
-package uz.oltinolma.producer.mvc.config.swagger;
+package uz.oltinolma.producer.mvc.config;
 
 
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.kinoman.demo"))
+                .apis(RequestHandlerSelectors.basePackage("uz.oltinolma.producer"))
                 .paths(PathSelectors.ant("/*"))
                 .build()
                 .apiInfo(apiInfo());
