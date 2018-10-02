@@ -31,15 +31,14 @@ public class PermissionDaoH2Impl extends PermissionDao {
 
     @Override
     public BaseResponse insertAll(List<Permissions> permissions) {
-        String sql = "INSERT INTO permissions(id, name, info, id_parent) VALUES (:id, :name, :info, :parent_id)";
+        String sql = "INSERT INTO permission(id, name, notes) VALUES (:id, :name, :notes)";
         Map<String, Object>[] batch = new HashMap[permissions.size()];
         for (int i = 0; i < permissions.size(); i++) {
             Permissions permission = permissions.get(i);
             Map<String, Object> map = new HashMap<>();
             map.put("id", permission.getId());
             map.put("name", permission.getName());
-            map.put("info", permission.getInfo());
-            map.put("parent_id", permission.getParent_id());
+            map.put("notes", permission.getInfo());
             batch[i] = map;
         }
         try {
@@ -61,8 +60,7 @@ public class PermissionDaoH2Impl extends PermissionDao {
             Permissions permissions = new Permissions();
             permissions.setId(resultSet.getInt("permission_id"));
             permissions.setName(resultSet.getString("permission_name"));
-            permissions.setInfo(resultSet.getString("permission_info"));
-            permissions.setParent_id(resultSet.getInt("id_parent_permission"));
+            permissions.setInfo(resultSet.getString("permission_notes"));
             return permissions;
         });
     }

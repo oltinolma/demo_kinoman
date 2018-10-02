@@ -50,24 +50,24 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         RawAccessJwtToken rawAccessToken = (RawAccessJwtToken) authentication.getCredentials();
         Jws<Claims> jwsClaims = rawAccessToken.parseClaims(jwtSettings.getTokenSigningKey());
         String login = jwsClaims.getBody().getSubject();
-        String id_employee_str = String.valueOf(jwsClaims.getBody().get("id_employee"));
-        UUID id_employee = null;
-        if (id_employee_str.equals("null")) {
-            throw new AuthenticationServiceException("Your token is expired!");
-        } else if (!StringUtils.isEmpty(id_employee_str)) {
-            id_employee = UUID.fromString(String.valueOf(id_employee_str));
-        }
-        User employee = userService.findByLogin(login);
+//        String id_employee_str = String.valueOf(jwsClaims.getBody().get("id_employee"));
+//        UUID id_employee = null;
+//        if (id_employee_str.equals("null")) {
+//            throw new AuthenticationServiceException("Your token is expired!");
+//        } else if (!StringUtils.isEmpty(id_employee_str)) {
+//            id_employee = UUID.fromString(String.valueOf(id_employee_str));
+//        }
+        User user = userService.findByLogin(login);
         List<String> scopes = jwsClaims.getBody().get("scopes", List.class);
         List<GrantedAuthority> authorities = scopes.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
         List<GrantedAuthority> inFactAuthList = new ArrayList<>();
-        GrantedAuthority inFactAuth = new SimpleGrantedAuthority(employee.getRole());
+        GrantedAuthority inFactAuth = new SimpleGrantedAuthority(user.getRole());
         inFactAuthList.add(inFactAuth);
         if (!authorities.retainAll(inFactAuthList)) {
             UserContext context = UserContext.create(login, authorities, permissionService.getByLogin(login));
-            context.setId_employee(id_employee);
+//            context.setId_employee(id_employee);
             return new JwtAuthenticationToken(context, context.getAuthorities());
         } else return null;//causes 401
     }
