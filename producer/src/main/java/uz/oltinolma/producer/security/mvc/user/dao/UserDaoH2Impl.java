@@ -32,8 +32,8 @@ public class UserDaoH2Impl extends UserDao {
 
     @Override
     public BaseResponse insertAll(List<User> users) {
-        String sql = "INSERT INTO user(id, name, login, password, id_role, enable) " +
-                "VALUES(:id, :name, :login, :password, :id_roles, :enable) ";
+        String sql = "INSERT INTO users(id, name, login, password, id_role, enable) " +
+                "VALUES(:id, :name, :login, :password, :id_role, :enable) ";
         Map<String, Object>[] batch = new HashMap[users.size()];
         for (int i = 0; i < users.size(); i++) {
             User employee = users.get(i);

@@ -12,8 +12,7 @@ public class PermissionsExtractor {
         Permissions permissions = new Permissions();
         permissions.setId(rs.getInt("id"));
         permissions.setName(rs.getString("name"));
-        permissions.setInfo(rs.getString("info"));
-        permissions.setParent_id(rs.getInt("id_parent"));
+        permissions.setInfo(rs.getString("notes"));
         return permissions;
     }
 }

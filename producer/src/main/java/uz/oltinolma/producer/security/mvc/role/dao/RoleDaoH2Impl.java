@@ -29,14 +29,13 @@ public class RoleDaoH2Impl extends RoleDao {
     }
 
     public BaseResponse insertAll(List<Role> roles) {
-        String sql = "INSERT INTO roles(id, name, id_status) VALUES (:id, :name, :id_status)";
+        String sql = "INSERT INTO role(id, name) VALUES (:id, :name)";
         Map<String, Object>[] batch = new HashMap[roles.size()];
         for (int i = 0; i < roles.size(); i++) {
             Role role = roles.get(i);
             Map<String, Object> map = new HashMap<>();
             map.put("id", role.getId());
             map.put("name", role.getName());
-            map.put("id_status", role.getId_status());
             batch[i] = map;
         }
         try {

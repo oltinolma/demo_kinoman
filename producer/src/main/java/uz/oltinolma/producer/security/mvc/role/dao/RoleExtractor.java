@@ -12,7 +12,6 @@ public class RoleExtractor {
         Role role = new Role();
         role.setId(rs.getLong("id"));
         role.setName(rs.getString("name"));
-        role.setId_status(rs.getInt("id_status"));
         return role;
     }
 }
