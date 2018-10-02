@@ -32,7 +32,7 @@ public class RolesPermissionsDaoH2Impl extends RolesPermissionsDao {
 
     @Override
     public BaseResponse insertAll(List<RolesPermissions> rolesPermissions) {
-        String sql = "INSERT INTO roles_permissions(id, id_role, id_permission) VALUES(:id, :id_role, :id_permission)";
+        String sql = "INSERT INTO role_permission(id, id_role, id_permission) VALUES(:id, :id_role, :id_permission)";
         Map<String, Object>[] batch = new HashMap[rolesPermissions.size()];
         for (int i = 0; i < rolesPermissions.size(); i++) {
             RolesPermissions rp = rolesPermissions.get(i);

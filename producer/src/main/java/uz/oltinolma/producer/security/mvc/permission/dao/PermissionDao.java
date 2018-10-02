@@ -33,12 +33,12 @@ public abstract class PermissionDao {
     }
 
     public List<Permissions> list() {
-        String sql = "SELECT * FROM permissions order by id";
+        String sql = "SELECT * FROM permission order by id";
         return getTemplate().query(sql, (resultSet, i) -> extractor.extract(resultSet));
     }
 
     public Permissions get(int id) {
-        String sql = "SELECT * FROM permissions WHERE id=:id";
+        String sql = "SELECT * FROM permission WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         return this.getTemplate().query(sql, parameterSource, (ResultSetExtractor<Permissions>) resultSet -> {
             if (resultSet.next()) {
@@ -62,7 +62,7 @@ public abstract class PermissionDao {
         map.put("id", permissions.getId());
         map.put("name", permissions.getName());
         map.put("info", permissions.getInfo());
-        String sql = "UPDATE permissions SET name=:name,info=:info WHERE id=:id";
+        String sql = "UPDATE permission SET name=:name,info=:info WHERE id=:id";
         BaseResponse baseResponse = new BaseResponse();
         try {
             this.getTemplate().update(sql, map);
@@ -77,7 +77,7 @@ public abstract class PermissionDao {
     }
 
     public BaseResponse delete(int id) {
-        String sql = "DELETE FROM permissions WHERE id=:id";
+        String sql = "DELETE FROM permission WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         BaseResponse baseResponse = new BaseResponse();
 

@@ -27,12 +27,12 @@ public abstract class RolesPermissionsDao {
     public abstract void setDataSource(DataSource dataSource);
     public abstract NamedParameterJdbcTemplate getTemplate();
     public List<RolesPermissions> list() {
-        String sql = "SELECT * FROM view_role_permissions";
+        String sql = "SELECT * FROM view_role_permission";
         return getTemplate().query(sql, (resultSet, i) -> rolePermissionsExtractor.extract(resultSet));
     }
 
     public List<Role> countList() {
-        String sql = "SELECT r.id, r.name, (SELECT COUNT(roles_id) FROM roles_permissions WHERE roles_id = r.id) AS count_permissions FROM roles r";
+        String sql = "SELECT r.id, r.name, (SELECT COUNT(roles_id) FROM role_permission WHERE roles_id = r.id) AS count_permissions FROM roles r";
         return getTemplate().query(sql, (resultSet, i) -> {
             Role role = new Role();
             role.setId(resultSet.getLong("id"));
@@ -42,7 +42,7 @@ public abstract class RolesPermissionsDao {
     }
 
     public RolesPermissions get(int id) {
-        String sql = "SELECT * FROM view_role_permissions WHERE id=:id";
+        String sql = "SELECT * FROM view_role_permission WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         return this.getTemplate().query(sql, parameterSource, resultSet -> {
             if (resultSet.next()) {
@@ -67,7 +67,7 @@ public abstract class RolesPermissionsDao {
         map.put("id", rolesPermissions.getId());
         map.put("id_permission", rolesPermissions.getId_permission());
         map.put("id_role", rolesPermissions.getId_role());
-        String sql = "UPDATE roles_permissions SET id_permission=:id_permission,id_role=:id_role WHERE id=:id";
+        String sql = "UPDATE role_permission SET id_permission=:id_permission,id_role=:id_role WHERE id=:id";
         try {
             getTemplate().update(sql, map);
         } catch (DuplicateKeyException d) {
@@ -81,7 +81,7 @@ public abstract class RolesPermissionsDao {
     }
 
     public BaseResponse delete(int id) {
-        String sql = "DELETE FROM roles_permissions WHERE id=:id";
+        String sql = "DELETE FROM role_permission WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         try {
             getTemplate().update(sql, parameterSource);

@@ -26,12 +26,12 @@ public abstract class RoleDao {
     public abstract NamedParameterJdbcTemplate getTemplate();
 
     public List<Role> getAllRoles() {
-        String sql = "SELECT * FROM roles";
+        String sql = "SELECT * FROM role";
         return getTemplate().query(sql, (resultSet, i) -> extractor.extract(resultSet));
     }
 
     public Role getRoleById(int id) {
-        String sql = "SELECT * FROM roles WHERE id=:id";
+        String sql = "SELECT * FROM role WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         return getTemplate().query(sql, parameterSource, resultSet -> {
             if (resultSet.next()) {
@@ -56,8 +56,7 @@ public abstract class RoleDao {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("id", role.getId());
         map.put("name", role.getName());
-        map.put("id_status", role.getId_status());
-        String sql = "UPDATE roles SET name=:name, id_status=:id_status WHERE id=:id";
+        String sql = "UPDATE role SET name=:name WHERE id=:id";
         try {
             getTemplate().update(sql, map);
         } catch (DuplicateKeyException d) {
@@ -71,7 +70,7 @@ public abstract class RoleDao {
     }
 
     public BaseResponse delete(int id) {
-        String sql = "DELETE FROM roles WHERE id=:id";
+        String sql = "DELETE FROM role WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         try {
             getTemplate().update(sql, parameterSource);
