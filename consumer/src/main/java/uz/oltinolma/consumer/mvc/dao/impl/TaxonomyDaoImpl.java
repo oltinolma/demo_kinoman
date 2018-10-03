@@ -28,7 +28,8 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
     public int insert(Taxonomy taxonomy) {
         Map<String, Object> map = new HashMap<>();
         map.put("name", taxonomy.getName());
-        String sql = "insert into taxonomy (name) values (:name)";
+        map.put("hierarchical", taxonomy.isHierarchical());
+        String sql = "insert into taxonomy (name,hierarchical) values (:name,:hierarchical)";
         return namedParameterJdbcTemplate.update(sql, map);
     }
 
@@ -37,7 +38,8 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
         Map<String, Object> map = new HashMap<>();
         map.put("id", taxonomy.getId());
         map.put("name", taxonomy.getName());
-        String sql = "update taxonomy set name=:name where id=:id";
+        map.put("hierarchical", taxonomy.isHierarchical());
+        String sql = "update taxonomy set name=:name,hierarchical=:hierarchical  where id=:id";
         return namedParameterJdbcTemplate.update(sql, map);
     }
 

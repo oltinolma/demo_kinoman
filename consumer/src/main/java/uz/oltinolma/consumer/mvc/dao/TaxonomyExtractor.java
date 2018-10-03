@@ -7,10 +7,11 @@ import java.sql.SQLException;
 
 public class TaxonomyExtractor {
     public static Taxonomy extract(ResultSet rs) throws SQLException {
-        Taxonomy employee = new Taxonomy();
-        employee.setId(rs.getInt("id"));
-        employee.setName(rs.getString("name"));
-        employee.setIdStatus(rs.getInt("id_status"));
-        return employee;
+        Taxonomy taxonomy = new Taxonomy();
+        taxonomy.setId(rs.getInt("id"));
+        taxonomy.setName(rs.getString("name"));
+        taxonomy.setIdStatus(rs.getInt("id_status"));
+        taxonomy.setHierarchical(rs.getBoolean("hierarchical"));
+        return taxonomy;
     }
 }
