@@ -39,7 +39,7 @@ public class FileIO {
         resource.remove("standart_absolute_path");
         resource.put("urls", urls);
         HashMap<Object, Object> response = new HashMap<>();
-        response.put(fileIO.getId(), resource);
+        response.put("file", resource);
         return response;
     }
 

@@ -2,7 +2,7 @@ server:
   port: 8787
 #rabbit mq config
 rabbitmq:
-  host: localhost
+  host: 192.168.0.50
   username: admin
   password: qazwsx123
   port: 5672
@@ -11,7 +11,7 @@ spring.datasource.dbcp2:
   driver-class-name: org.postgresql.Driver
   username: postgres
   password: postgres
-  url: "jdbc:postgresql://localhost:5432/demo-kinoman"
+  url: "jdbc:postgresql://192.168.0.50:5432/dk"
   initial-size: 0
   max-total: 12
   max-idle: 12
