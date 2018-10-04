@@ -4,8 +4,7 @@ public class Taxonomy {
 
     private Integer id;
     private String name;
-    private boolean structure;
-    private Integer idParent;
+    private Integer idStatus;
 
     public Integer getId() {
         return id;
@@ -23,20 +22,12 @@ public class Taxonomy {
         this.name = name;
     }
 
-    public boolean isStructure() {
-        return structure;
+    public Integer getIdStatus() {
+        return idStatus;
     }
 
-    public void setStructure(boolean structure) {
-        this.structure = structure;
-    }
-
-    public Integer getIdParent() {
-        return idParent;
-    }
-
-    public void setIdParent(Integer idParent) {
-        this.idParent = idParent;
+    public void setIdStatus(Integer idStatus) {
+        this.idStatus = idStatus;
     }
 
     @Override
@@ -44,8 +35,7 @@ public class Taxonomy {
         return "Taxonomy{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", structure=" + structure +
-                ", idParent=" + idParent +
+                ", idStatus=" + idStatus +
                 '}';
     }
 }
