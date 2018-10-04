@@ -63,24 +63,25 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
     }
 
     private void validatePassword(String login, String password, String expectedPw) {
+        System.out.println(encoder.encode(password));
         if (!encoder.matches(password, expectedPw)) {
             logger.error("Wrong credentials: login = " + login
                     + ", expected password = " + expectedPw
                     + ", actual row password = " + password
                     + ", actual encoded password = " + encoder.encode(password));
 
-            throw new BadCredentialsException("Login yoki parol xato!");
+            throw new BadCredentialsException("Incorrect username or password.");
         }
     }
 
-    private void validateEmployee(User employee) {
-        if (employee == null)
+    private void validateEmployee(User user) {
+        if (user == null)
             throw new UsernameNotFoundException("Login yoki parol xato!");
 
-        if (!employee.isEnable())
+        if (!user.isEnable())
             throw new UsernameNotFoundException("Siz uchun kirish yopilgan!");
 
-        if (employee.getRole().isEmpty())
+        if (user.getRole().isEmpty())
             throw new InsufficientAuthenticationException("Foydalanuvchini huquqlar yo'q");
     }
 

@@ -24,7 +24,7 @@ public class RawAccessJwtToken implements JwtToken {
             throw new BadCredentialsException("Xato token: ", ex);
         } catch (ExpiredJwtException expiredEx) {
 //            logger.info("JWT Token is expired", expiredEx);
-            throw new JwtExpiredTokenException(this, "Token muddati tugagan", expiredEx);
+            throw new JwtExpiredTokenException(this, "Access token is expired.", expiredEx);
         }
     }
 

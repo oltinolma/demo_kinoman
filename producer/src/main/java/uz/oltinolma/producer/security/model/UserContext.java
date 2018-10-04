@@ -11,7 +11,7 @@ public class UserContext {
     private final String login;
     private final List<GrantedAuthority> authorities;
     private final Set<String> permissions;
-    private UUID id_employee;
+    private UUID id_user;
 
     private UserContext(String login, List<GrantedAuthority> authorities, Set<String> permissions) {
         this.login = login;
@@ -45,11 +45,11 @@ public class UserContext {
         return permissions;
     }
 
-    public UUID getId_employee() {
-        return id_employee;
+    public UUID getId_user() {
+        return id_user;
     }
 
-    public void setId_employee(UUID id_employee) {
-        this.id_employee = id_employee;
+    public void setId_user(UUID id_user) {
+        this.id_user = id_user;
     }
 }
