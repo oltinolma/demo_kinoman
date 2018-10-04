@@ -4,8 +4,8 @@ public class Taxonomy {
 
     private Integer id;
     private String name;
-    private Integer idStatus;
-    private boolean hierarchical;
+    private boolean structure;
+    private Integer idParent;
 
     public Integer getId() {
         return id;
@@ -23,20 +23,20 @@ public class Taxonomy {
         this.name = name;
     }
 
-    public Integer getIdStatus() {
-        return idStatus;
+    public boolean isStructure() {
+        return structure;
     }
 
-    public void setIdStatus(Integer idStatus) {
-        this.idStatus = idStatus;
+    public void setStructure(boolean structure) {
+        this.structure = structure;
     }
 
-    public boolean isHierarchical() {
-        return hierarchical;
+    public Integer getIdParent() {
+        return idParent;
     }
 
-    public void setHierarchical(boolean hierarchical) {
-        this.hierarchical = hierarchical;
+    public void setIdParent(Integer idParent) {
+        this.idParent = idParent;
     }
 
     @Override
@@ -44,8 +44,8 @@ public class Taxonomy {
         return "Taxonomy{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", idStatus=" + idStatus +
-                ", hierarchical=" + hierarchical +
+                ", structure=" + structure +
+                ", idParent=" + idParent +
                 '}';
     }
 }

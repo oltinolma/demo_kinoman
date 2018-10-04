@@ -28,8 +28,9 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
     public int insert(Taxonomy taxonomy) {
         Map<String, Object> map = new HashMap<>();
         map.put("name", taxonomy.getName());
-        map.put("hierarchical", taxonomy.isHierarchical());
-        String sql = "insert into taxonomy (name,hierarchical) values (:name,:hierarchical)";
+        map.put("structure", taxonomy.isStructure());
+        map.put("id_parent", taxonomy.getIdParent());
+        String sql = "insert into taxonomy (name,structure,id_parent) values (:name,:structure,:id_parent)";
         return namedParameterJdbcTemplate.update(sql, map);
     }
 
@@ -38,8 +39,9 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
         Map<String, Object> map = new HashMap<>();
         map.put("id", taxonomy.getId());
         map.put("name", taxonomy.getName());
-        map.put("hierarchical", taxonomy.isHierarchical());
-        String sql = "update taxonomy set name=:name,hierarchical=:hierarchical  where id=:id";
+        map.put("structure", taxonomy.isStructure());
+        map.put("id_parent", taxonomy.getIdParent());
+        String sql = "update taxonomy set name=:name,structure=:structure, id_parent=:id_parent where id=:id";
         return namedParameterJdbcTemplate.update(sql, map);
     }
 
@@ -52,14 +54,14 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
 
     @Override
     public Taxonomy getById(Integer id) {
-        String sql = "select * from taxonomy where id=:id and id_status=1";
+        String sql = "select * from taxonomy where id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
         return namedParameterJdbcTemplate.query(sql, parameterSource, TaxonomyExtractor::extract);
     }
 
     @Override
     public List<Taxonomy> getAll() {
-        String sql = "select * from taxonomy where id_status = 1";
+        String sql = "select * from taxonomy ";
         return namedParameterJdbcTemplate.query(sql, (resultSet, i) -> TaxonomyExtractor.extract(resultSet));
     }
 }

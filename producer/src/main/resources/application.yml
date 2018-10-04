@@ -12,7 +12,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
-    url: "jdbc:postgresql://192.168.0.50:5432/kinoman-demo"
+    url: "jdbc:postgresql://192.168.0.50:5432/dk"
     initial-size: 0
     max-total: 12
     max-idle: 12
@@ -57,11 +57,11 @@ server:
 #  port : 9300
 #  nodename: dpat
 #
-#rabbitmq:
-#  host: 192.168.0.50
-#  username: admin
-#  password: qazwsx123
-#  port: 5672
+rabbitmq:
+  host: 192.168.0.50
+  username: admin
+  password: qazwsx123
+  port: 5672
 
 file.uploadDir: ./uploads
 

@@ -11,7 +11,7 @@ spring.datasource.dbcp2:
   driver-class-name: org.postgresql.Driver
   username: postgres
   password: postgres
-  url: "jdbc:postgresql://192.168.0.50:5432/kinoman-demo"
+  url: "jdbc:postgresql://192.168.0.50:5432/dk"
   initial-size: 0
   max-total: 12
   max-idle: 12

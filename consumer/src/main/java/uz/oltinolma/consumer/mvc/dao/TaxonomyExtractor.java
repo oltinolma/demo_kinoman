@@ -10,8 +10,8 @@ public class TaxonomyExtractor {
         Taxonomy taxonomy = new Taxonomy();
         taxonomy.setId(rs.getInt("id"));
         taxonomy.setName(rs.getString("name"));
-        taxonomy.setIdStatus(rs.getInt("id_status"));
-        taxonomy.setHierarchical(rs.getBoolean("hierarchical"));
+        taxonomy.setStructure(rs.getBoolean("structure"));
+        taxonomy.setIdParent(rs.getInt("id_parent"));
         return taxonomy;
     }
 }

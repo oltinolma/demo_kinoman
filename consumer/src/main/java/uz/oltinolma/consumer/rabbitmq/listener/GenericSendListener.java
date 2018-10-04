@@ -9,7 +9,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
-import uz.oltinolma.consumer.mvc.service.TaxonomyTermService;
 
 @Component
 @RabbitListener(priority = "1", queues = "send",
@@ -17,12 +16,11 @@ import uz.oltinolma.consumer.mvc.service.TaxonomyTermService;
 public class GenericSendListener {
 
     private TaxonomyService taxonomyService;
-    private TaxonomyTermService taxonomyTermService;
 
     private ObjectMapper objectMapper;
 
     @Autowired
-    public void setAll(ObjectMapper objectMapper, TaxonomyService taxonomyService,TaxonomyTermService taxonomyTermService) {
+    public void setAll(ObjectMapper objectMapper, TaxonomyService taxonomyService) {
         this.objectMapper = objectMapper;
         this.taxonomyService = taxonomyService;
     }
