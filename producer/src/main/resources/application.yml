@@ -2,17 +2,17 @@ management.security.enabled: false
 demo.security.jwt:
   tokenExpirationTime: 15000 # Number of minutes
   refreshTokenExpTime: 60000 # Minutes
-  tokenIssuer: http://rest1.oltinolma.uz
+  tokenIssuer: http://${kinoman.host}
   tokenSigningKey: 7a50f044da25a0f071f3c3db105d9a02
 spring:
   data:
     elasticsearch:
-      cluster-nodes: 192.168.0.50:9300
+      cluster-nodes: ${kinoman.host}:9300
   datasource.dbcp2:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
-    url: "jdbc:postgresql://192.168.0.50:5432/dk"
+    username: ${local.pg.user}
+    password: ${local.pg.password}
+    url: "jdbc:postgresql://${kinoman.host}:5432/dk"
     initial-size: 0
     max-total: 12
     max-idle: 12

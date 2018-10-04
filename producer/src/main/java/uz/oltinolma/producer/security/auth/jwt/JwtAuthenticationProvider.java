@@ -14,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.security.exceptions.JwtExpiredTokenException;
 import uz.oltinolma.producer.security.mvc.user.User;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
@@ -50,26 +51,29 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         RawAccessJwtToken rawAccessToken = (RawAccessJwtToken) authentication.getCredentials();
         Jws<Claims> jwsClaims = rawAccessToken.parseClaims(jwtSettings.getTokenSigningKey());
         String login = jwsClaims.getBody().getSubject();
-//        String id_employee_str = String.valueOf(jwsClaims.getBody().get("id_employee"));
-//        UUID id_employee = null;
-//        if (id_employee_str.equals("null")) {
-//            throw new AuthenticationServiceException("Your token is expired!");
-//        } else if (!StringUtils.isEmpty(id_employee_str)) {
-//            id_employee = UUID.fromString(String.valueOf(id_employee_str));
-//        }
-        User user = userService.findByLogin(login);
+        String id_user_str = String.valueOf(jwsClaims.getBody().get("id_user"));
+        UUID id_user = null;
+        if (id_user_str.equals("null")) {
+            throw new AuthenticationServiceException("Your token is expired!");
+        } else if (!StringUtils.isEmpty(id_user_str)) {
+            id_user = UUID.fromString(String.valueOf(id_user_str));
+        }
         List<String> scopes = jwsClaims.getBody().get("scopes", List.class);
         List<GrantedAuthority> authorities = scopes.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+
         List<GrantedAuthority> inFactAuthList = new ArrayList<>();
+        User user = userService.findByLogin(login);
         GrantedAuthority inFactAuth = new SimpleGrantedAuthority(user.getRole());
         inFactAuthList.add(inFactAuth);
-        if (!authorities.retainAll(inFactAuthList)) {
+
+        boolean isValidScope = !authorities.retainAll(inFactAuthList);
+        if (isValidScope) {
             UserContext context = UserContext.create(login, authorities, permissionService.getByLogin(login));
-//            context.setId_employee(id_employee);
+            context.setId_user(id_user);
             return new JwtAuthenticationToken(context, context.getAuthorities());
-        } else return null;//causes 401
+        } else throw new JwtExpiredTokenException("The token scope mismatch!");
     }
 
     @Override
