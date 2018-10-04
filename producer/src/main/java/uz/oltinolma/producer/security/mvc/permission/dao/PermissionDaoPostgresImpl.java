@@ -26,8 +26,8 @@ public class PermissionDaoPostgresImpl extends PermissionDao {
         Map<String, Object> map = new HashMap<>();
         map.put("id", permissions.getId());
         map.put("name", permissions.getName());
-        map.put("notes", permissions.getInfo());
-        String sql = "INSERT INTO permission(name,notes) VALUES (:name,:notes)";
+        map.put("info", permissions.getInfo());
+        String sql = "INSERT INTO permissions(name,info) VALUES (:name,:info)";
         try {
             this.getTemplate().update(sql, map);
         } catch (DuplicateKeyException d) {

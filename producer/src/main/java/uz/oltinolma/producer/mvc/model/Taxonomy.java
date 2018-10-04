@@ -1,6 +1,8 @@
 package uz.oltinolma.producer.mvc.model;
 
 public class Taxonomy {
+    //priducer juda shoshilinch uzgarish
+
     private Integer id;
     private String name;
     private Integer idStatus;
