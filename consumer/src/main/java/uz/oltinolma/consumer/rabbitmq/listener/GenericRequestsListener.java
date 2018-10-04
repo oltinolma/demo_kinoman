@@ -12,7 +12,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 @Component
-@RabbitListener(priority = "1", queues = "request",
+@RabbitListener(priority = "88", queues = "request",
         containerFactory = "directMessageListenerContainer")
 public class GenericRequestsListener {
 
@@ -29,6 +29,7 @@ public class GenericRequestsListener {
     @RabbitHandler
     public String requests(@Header("amqp_receivedRoutingKey") String rk, String json) throws Exception {
         Message message = objectMapper.readValue(json, Message.class);
+        System.out.println("routing key" + rk);
         return router(rk, message);
     }
 

@@ -48,7 +48,7 @@ public class FileDaoImpl implements FileDao {
 
 
     @Override
-    public HashMap<Object, Object> saveFile(MultipartFile file, UUID fileId, UUID productId) {
+    public HashMap<Object, Object> saveFile(MultipartFile file, UUID fileId) {
         Long time = System.currentTimeMillis();
         PathInfo pathInfo = createSubDirectories(time);
         Path path = pathInfo.getPath();
@@ -77,16 +77,10 @@ public class FileDaoImpl implements FileDao {
             if (isImage(fileIO.getExtension())) {
                 resizeImage(resource.getFile());
             }
-            return (productId == null) ? insert(fileIO, null) : insert2(fileIO, productId);
-//            return file_id;
+            return insert(fileIO);
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + file_id + ". Please try again!", ex);
         }
-    }
-
-    @Override
-    public HashMap<Object, Object> saveFileForProduct(MultipartFile file, UUID id, UUID productId) {
-        return saveFile(file, id, productId);
     }
 
     @Override
@@ -117,21 +111,7 @@ public class FileDaoImpl implements FileDao {
         });
     }
 
-    @Override
-    public HashMap<Object, Object> getUsageFilesFromProductId(UUID productId) {
-        String sql = "select * from files_products where id_product=:productId";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("productId", productId);
-        HashMap<Object, Object> io = new HashMap<>();
-        io.put("id_product", productId);
-        io.put("files", namedParameterJdbcTemplate.query(sql, parameterSource, (rs, i) -> {
-            HashMap<Object, Object> files = new HashMap<>();
-            files.put(rs.getObject("id_file"), getFileFromId((UUID) rs.getObject("id_file")));
-            return files;
-        }));
-        return io;
-    }
-
-    public HashMap<Object, Object> insert(FileIO fileIO, UUID productId) {
+    public HashMap<Object, Object> insert(FileIO fileIO) {
         String sqlInsert = "INSERT INTO files (id,original_name, original_absolute_path," +
                 "standart_absolute_path," +
                 "thumbnail_absolute_path,comment,relative_path, extension, size, time)" +
@@ -149,37 +129,6 @@ public class FileDaoImpl implements FileDao {
         map.put("thumbnail_absolute_path", (isImage(fileIO.getExtension())) ? fileIO.getHost() + fileIO.getThumbnailName() : null);
         map.put("standart_absolute_path", (isImage(fileIO.getExtension())) ? fileIO.getHost() + fileIO.getStandardName() : null);
         namedParameterJdbcTemplate.update(sqlInsert, map);
-        return fileIO.responseBuilder(fileIO, map);
-    }
-
-    public HashMap<Object, Object> insert2(FileIO fileIO, UUID productId) {
-        String sqlInsert = "INSERT INTO files (id,original_name, original_absolute_path," +
-                "standart_absolute_path," +
-                "thumbnail_absolute_path,comment,relative_path, extension, size, time)" +
-                " VALUES (:id,:original_name, :original_absolute_path,:standart_absolute_path" +
-                ",:thumbnail_absolute_path,:comment,:relative_path,:extension, :size, :time) ";
-        String sql = "WITH ins1 AS (" +
-                sqlInsert +
-                "   RETURNING id AS file_id" +
-                "   )" +
-                "INSERT INTO files_products (id_file, id_product) values((select file_id from ins1), :id_product)";
-        System.out.println("req");
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("id", fileIO.getId());
-        map.put("id_product", productId);
-        map.put("original_name", fileIO.getOriginalName());
-        map.put("relative_path", fileIO.getPath());
-        map.put("extension", fileIO.getExtension());
-        map.put("size", fileIO.getSize());
-        map.put("time", fileIO.getTime());
-        map.put("comment", fileIO.getComment());
-        map.put("original_absolute_path", fileIO.getHost() + fileIO.getId());
-        map.put("thumbnail_absolute_path", (isImage(fileIO.getExtension())) ? fileIO.getHost() + fileIO.getThumbnailName() : null);
-        map.put("standart_absolute_path", (isImage(fileIO.getExtension())) ? fileIO.getHost() + fileIO.getStandardName() : null);
-        namedParameterJdbcTemplate.update(sql, map);
-
-        map.remove("id");
-        map.remove("id_product");
         return fileIO.responseBuilder(fileIO, map);
     }
 
@@ -222,7 +171,7 @@ public class FileDaoImpl implements FileDao {
     public void resizeImage(File file) throws IOException {
         Thumbnails.of(file)
                 .size(800, 800)
-                .outputQuality(0.6)
+                .outputQuality(0.9)
                 .toFiles(RenameU.PREFIX_800x800);
         Thumbnails.of(file)
                 .crop(Positions.CENTER)
