@@ -43,6 +43,15 @@ public class GenericSendListener {
             case "send.taxonomy.delete":
                 taxonomyService.delete((int) message.getParams().get("id"));
                 break;
+//            case "send.taxonomyTerm.insert":
+//                tax.insert(objectMapper.convertValue(message.getPayload(), Taxonomy.class));
+//                break;
+//            case "send.taxonomyTerm.update":
+//                taxonomyService.update(objectMapper.convertValue(message.getPayload(), Taxonomy.class));
+//                break;
+//            case "send.taxonomyTerm.delete":
+//                taxonomyService.delete((int) message.getParams().get("id"));
+//                break;
             default:
                 break;
         }
