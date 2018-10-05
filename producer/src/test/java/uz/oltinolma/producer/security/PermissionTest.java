@@ -13,10 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import uz.oltinolma.producer.config.SecurityTestConfig;
 import uz.oltinolma.producer.security.config.InitAll;
-import uz.oltinolma.producer.security.model.UserContext;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 import uz.oltinolma.producer.security.token.JwtTokenFactory;
@@ -30,16 +28,15 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uz.oltinolma.producer.security.UserDummies.sampleUser;
 import static uz.oltinolma.producer.security.UserDummies.userContextForGuest;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(classes = SecurityTestConfig.class)
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PermissionTest {
     @Autowired
@@ -50,6 +47,7 @@ public class PermissionTest {
     private PermissionService permissionService;
     @MockBean
     private InitAll initAll;
+
     @Autowired
     private JwtTokenFactory tokenFactory;
 

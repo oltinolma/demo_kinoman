@@ -2,6 +2,7 @@ package uz.oltinolma.producer.security.mvc.permission.dao;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import uz.oltinolma.producer.security.common.LogUtil;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.permission.Permissions;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +20,7 @@ public class PermissionDaoPostgresImpl extends PermissionDao {
     private static final Logger logger = LogUtil.getInstance();
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
+    @Resource(name = "datasource")
     public void setDataSource(DataSource dataSource) {
         namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }

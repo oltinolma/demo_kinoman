@@ -14,6 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import uz.oltinolma.producer.config.SecurityTestConfig;
+import uz.oltinolma.producer.security.config.InitAll;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 
 import static org.mockito.BDDMockito.given;
@@ -24,14 +26,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uz.oltinolma.producer.security.UserDummies.sampleUser;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(classes = SecurityTestConfig.class)
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LoginTest {
     @MockBean(name = "userServiceH2Impl")
     private UserService userService;
-
+    @MockBean
+    private InitAll initAll;
 
     @Autowired
     private MockMvc mockMvc;
