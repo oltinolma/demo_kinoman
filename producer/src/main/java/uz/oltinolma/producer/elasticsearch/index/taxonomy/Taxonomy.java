@@ -10,11 +10,10 @@ public class Taxonomy {
     private int id;
     @Field
     private String name;
-    private boolean structure;
     @Field
     private int id_parent;
     @Field
-    private String remark;
+    private String taxonomy;
 
     public int getId() {
         return id;
@@ -32,14 +31,6 @@ public class Taxonomy {
         this.name = name;
     }
 
-    public boolean isStructure() {
-        return structure;
-    }
-
-    public void setStructure(boolean structure) {
-        this.structure = structure;
-    }
-
     public int getId_parent() {
         return id_parent;
     }
@@ -48,11 +39,11 @@ public class Taxonomy {
         this.id_parent = id_parent;
     }
 
-    public String getRemark() {
-        return remark;
+    public String getTaxonomy() {
+        return taxonomy;
     }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setTaxonomy(String taxonomy) {
+        this.taxonomy = taxonomy;
     }
 }
