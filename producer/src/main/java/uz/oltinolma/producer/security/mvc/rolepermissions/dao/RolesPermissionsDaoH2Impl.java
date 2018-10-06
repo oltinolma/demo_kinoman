@@ -21,7 +21,8 @@ public class RolesPermissionsDaoH2Impl extends RolesPermissionsDao {
     @Autowired
     private NamedParameterJdbcTemplate template;
 
-    @Resource(name = "h2Datasource")
+    @Autowired
+    @Qualifier("h2Datasource")
     public void setDataSource(DataSource dataSource) {
         template = new NamedParameterJdbcTemplate(dataSource);
     }

@@ -21,7 +21,7 @@ public class TaxonomyPgRepository {
     }
 
     public List<Taxonomy> getAllTaxonomies() {
-        String sql = "SELECT taxonomyfunction()";
+        String sql = "select t.id, t.name, t.id_parent, t.parent_name as taxonomy  from get_all_taxonomy_ancestors() t ";
         return template.query(sql, (rs, i) -> new TaxonomyExtractor().extractData(rs));
     }
 
