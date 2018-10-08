@@ -63,7 +63,6 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
     }
 
     private void validatePassword(String login, String password, String expectedPw) {
-        System.out.println(encoder.encode(password));
         if (!encoder.matches(password, expectedPw)) {
             logger.error("Wrong credentials: login = " + login
                     + ", expected password = " + expectedPw

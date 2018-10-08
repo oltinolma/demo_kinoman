@@ -41,10 +41,10 @@ public class DBConfiguration {
     @Bean(name = "h2Datasource")
     public BasicDataSource h2DataSource() {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(env.getProperty("inh2.datasource.driver-class-name"));
-        dataSource.setUrl(env.getProperty("inh2.datasource.url"));
-        dataSource.setUsername(env.getProperty("inh2.datasource.username"));
-        dataSource.setPassword(env.getProperty("inh2.datasource.password"));
+        dataSource.setDriverClassName(env.getProperty("spring.h2.datasource.driver-class-name"));
+        dataSource.setUrl(env.getProperty("spring.h2.datasource.url"));
+        dataSource.setUsername(env.getProperty("spring.h2.datasource.username"));
+        dataSource.setPassword(env.getProperty("spring.h2.datasource.password"));
 
         Resource initData = new ClassPathResource("scripts/h2.sql");
         DatabasePopulator databasePopulator = new ResourceDatabasePopulator(initData);
