@@ -3,32 +3,36 @@ package uz.oltinolma.producer.elasticsearch.index.tools;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class IndexCreator {
+public class IndexingTools {
     private RestTemplate restTemplate;
     private String indexName;
     private String analyzerName;
     private String type;
     private List<String> fields = new ArrayList<>();
+    private UrlBuilder urlBuilder = new UrlBuilder();
 
-    public IndexCreator(RestTemplate restTemplate) {
+    public IndexingTools(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public void create() throws URISyntaxException {
+    public void createIndex() throws URISyntaxException {
         validateFields();
         //sorry for toArray. It is the most stupid API from Oracle
-//        restTemplate.put(indexURL(), indexWithEdge_ngramFilter(fields.toArray(new String[0])));
+        restTemplate.put(urlBuilder.urlForIndex(indexName), indexWithEdge_ngramFilter(fields.toArray(new String[0])));
         System.out.println(indexWithEdge_ngramFilter(fields.toArray(new String[0])));
     }
 
+    public void deleteIndexIfExists() throws URISyntaxException {
+        restTemplate.delete(urlBuilder.urlForIndex(indexName));
+    }
+
     private void validateFields() {
-        Assert.noNullElements(new Object[]{restTemplate, indexName, analyzerName, type}, "IndexCreator has null value!");
+        Assert.noNullElements(new Object[]{restTemplate, indexName, analyzerName, type}, "IndexingTools has null value!");
         Assert.notEmpty(fields, "Index fields cannot be empty.");
     }
 
@@ -67,13 +71,6 @@ public class IndexCreator {
         return json;
     }
 
-    private URI indexURL() throws URISyntaxException {
-        String protocol = "http://";
-        String host = System.getenv("kinoman.host");
-        int port = 9200;
-        String path = "/" + indexName;
-        return new URI(protocol + host + ":" + port + path);
-    }
 
     private String textProperty(String name) {
         String json = " \"" + name + "\": {\n" +
@@ -91,24 +88,24 @@ public class IndexCreator {
         return joiner.toString();
     }
 
-    public IndexCreator setIndexName(String indexName) {
+    public IndexingTools setIndexName(String indexName) {
         this.indexName = indexName;
         return this;
     }
 
-    public IndexCreator setAnalyzerName(String analyzerName) {
+    public IndexingTools setAnalyzerName(String analyzerName) {
         this.analyzerName = analyzerName;
         return this;
     }
 
 
-    public IndexCreator setType(String type) {
+    public IndexingTools setType(String type) {
         this.type = type;
         return this;
     }
 
 
-    public IndexCreator addField(String field) {
+    public IndexingTools addField(String field) {
         if (field != null && !field.isEmpty())
             this.fields.add(field);
         return this;
