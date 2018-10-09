@@ -12,7 +12,6 @@ import uz.oltinolma.producer.security.mvc.role.service.RoleService;
 import java.util.List;
 
 @RestController
-@PreAuthorize("@SecurityPermission.hasPermission('role')")
 @Api(value = "x-market", description = "Huquqlar bilan bog'liq operatsiyalar")
 @RequestMapping(value = "/role")
 public class RoleController {

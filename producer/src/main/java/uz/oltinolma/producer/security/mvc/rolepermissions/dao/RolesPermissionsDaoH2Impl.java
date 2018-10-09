@@ -9,6 +9,7 @@ import uz.oltinolma.producer.security.common.LogUtil;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.rolepermissions.RolesPermissions;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +23,8 @@ public class RolesPermissionsDaoH2Impl extends RolesPermissionsDao {
 
     @Autowired
     @Qualifier("h2Datasource")
-    public void setDataSource(DataSource dataSource) {
-        template = new NamedParameterJdbcTemplate(dataSource);
+    public void setDataSource(DataSource h2Datasource) {
+        template = new NamedParameterJdbcTemplate(h2Datasource);
     }
 
     public NamedParameterJdbcTemplate getTemplate() {
