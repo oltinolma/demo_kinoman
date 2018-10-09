@@ -69,8 +69,13 @@ public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingF
     }
 
     private void validateRequest(HttpServletRequest request) {
+        logger.warn("Incoming request method : " + request.getMethod());
+        logger.warn("Incoming request is ajax : " + WebUtil.isAjax(request));
+        logger.warn("Is valid request : " + !(!HttpMethod.POST.name().equals(request.getMethod()) || !WebUtil.isAjax(request)));
         if (!HttpMethod.POST.name().equals(request.getMethod()) || !WebUtil.isAjax(request)) {
             logger.error("Authentication method not supported. Request method: " + request.getMethod());
+            logger.error("Check is ajax :  " + !WebUtil.isAjax(request));
+
             throw new AuthMethodNotSupportedException("Authentication method not supported.");
         }
     }

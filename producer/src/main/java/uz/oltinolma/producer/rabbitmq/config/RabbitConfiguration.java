@@ -65,17 +65,17 @@ public class RabbitConfiguration {
 
     @Bean
     public Queue sendQueue() {
-        return new Queue("send");
+        return new Queue("kinoman.send");
     }
 
     @Bean
     public Queue requestQueue() {
-        return new Queue("request");
+        return new Queue("kinoman.request");
     }
 
     @Bean
     TopicExchange topicExchange() {
-        return new TopicExchange("topicExchange");
+        return new TopicExchange("kinomanTopicExchange");
     }
 
     @Bean
