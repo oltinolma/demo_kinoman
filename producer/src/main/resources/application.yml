@@ -7,11 +7,11 @@ demo.security.jwt:
 spring:
   data:
     elasticsearch:
-      cluster-nodes: localhost:9300
+      cluster-nodes: 192.168.0.50:9300
   datasource.dbcp2:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
+    username: ${kinoman.pg.user}
+    password: ${kinoman.pg.password}
     url: "jdbc:postgresql://${kinoman.host}:5432/dk"
     initial-size: 0
     max-total: 12

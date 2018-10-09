@@ -58,32 +58,40 @@ public class PermissionTest {
         permissions.add("permission_2");
         given(userService.findByLogin(sampleUser().getLogin())).willReturn(sampleUser());
         given(permissionService.getByLogin(sampleUser().getLogin())).willReturn(permissions);
-
     }
 
     @Test
+    @DisplayName("Authorization header cannot be blank.")
     public void requestAnyUrlWithoutRequiredHeaders401() throws Exception {
         mockMvc.perform(get("/anyUrl"))
-                .andExpect(status().isUnauthorized()).andDo(print());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value("Authorization header cannot be blank!"))
+                .andDo(print());
         mockMvc.perform(post("/anyUrl"))
-                .andExpect(status().isUnauthorized()).andDo(print());
-
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value("Authorization header cannot be blank!"))
+                .andDo(print());
     }
 
     @Test
+    @DisplayName("Unauthorized when invalid token.")
     public void whenTokenWrong401() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "wrong_token");
         headers.set("Content-Type", "application/json");
         headers.set("user-agent", "someAgent");
         mockMvc.perform(post("/anyUrl").headers(headers))
-                .andExpect(status().isUnauthorized()).andDo(print());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value("Invalid access token."))
+                .andDo(print());
         mockMvc.perform(get("/anyUrl").headers(headers))
-                .andExpect(status().isUnauthorized()).andDo(print());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("message").value("Invalid access token."))
+                .andDo(print());
     }
 
     @Test
-    @DisplayName("When Routing-Key header is missing response status must be 400.")
+    @DisplayName("400 when Routing-Key header is missing.")
     public void whenRoutingHeaderIsMIssing400() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "Bearer " + normalToken());
@@ -95,7 +103,7 @@ public class PermissionTest {
     }
 
     @Test
-    @DisplayName("When token expired response status 401")
+    @DisplayName("Unauthorized when token is expired.")
     public void whenTokenExpired401() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "Bearer " + expiredToken());
@@ -106,6 +114,21 @@ public class PermissionTest {
                 .andDo(print())
                 .andExpect(status().is(401))
                 .andExpect(jsonPath("message").value("Access token is expired."));
+    }
+
+    @Test
+    @DisplayName("Authorized when has permission.")
+    public void authorizedWhenHasPermission() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Authorization", "Bearer " + normalToken());
+        headers.set("Content-Type", "application/json");
+        headers.set("Routing-Key", "permission_1");
+        headers.set("user-agent", "someAgent");
+
+        mockMvc.perform(post("/anyUrl").headers(headers))
+                .andExpect(status().is(404));
+        mockMvc.perform(get("/hello").headers(headers))
+                .andExpect(status().isOk());
     }
 
 
