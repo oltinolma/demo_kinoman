@@ -1,5 +1,7 @@
 package uz.oltinolma.consumer.mvc.dao.impl;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import uz.oltinolma.consumer.mvc.dao.TaxonomyDao;
 import uz.oltinolma.consumer.mvc.dao.TaxonomyExtractor;
 import uz.oltinolma.consumer.mvc.model.Taxonomy;
@@ -10,6 +12,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,5 +67,16 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
     public List<Taxonomy> getAll() {
         String sql = "select * from taxonomy ";
         return namedParameterJdbcTemplate.query(sql, (resultSet, i) -> TaxonomyExtractor.extract(resultSet));
+    }
+
+    @Override
+    public Object listForInputLabels() {
+        String sql = "select array_to_json(array_agg(row_to_json(t))) as x " +
+                " from taxonomy t where id_parent is null and structure is true;";
+        return namedParameterJdbcTemplate.query(sql, resultSet -> {
+            if(resultSet.next())
+            return resultSet.getString("x");
+            else return null;
+        });
     }
 }

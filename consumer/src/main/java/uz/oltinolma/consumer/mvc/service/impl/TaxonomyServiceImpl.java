@@ -41,4 +41,9 @@ public class TaxonomyServiceImpl implements TaxonomyService {
     public ResponseWrapper getAll() {
         return new ResponseWrapper(taxonomyDao.getAll());
     }
+
+    @Override
+    public String listForInputLabels() {
+       return (String) taxonomyDao.listForInputLabels();
+    }
 }

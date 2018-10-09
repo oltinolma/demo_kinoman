@@ -16,4 +16,6 @@ public interface TaxonomyDao {
 
     List<Taxonomy> getAll();
 
+    Object listForInputLabels();
+
 }
