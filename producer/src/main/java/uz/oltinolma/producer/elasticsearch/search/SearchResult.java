@@ -57,7 +57,6 @@ public class SearchResult {
     }
 
     public SearchResult(SearchHit hit) {
-
         this.id = hit.getSource().get("id");
         this.term = (String)hit.getSource().get("name");
         this.score = hit.getScore();

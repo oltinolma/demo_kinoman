@@ -1,6 +1,6 @@
 package uz.oltinolma.producer.elasticsearch.index.taxonomy;
 
-import org.springframework.data.elasticsearch.repository.ElasticsearchCrudRepository;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-public interface TaxonomyElasticsearchRepository extends ElasticsearchCrudRepository<Taxonomy, Integer> {
+public interface TaxonomyElasticsearchRepository extends ElasticsearchRepository<Taxonomy, Integer> {
 }

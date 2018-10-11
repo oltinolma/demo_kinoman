@@ -1,0 +1,68 @@
+management.security.enabled: false
+demo.security.jwt:
+  tokenExpirationTime: 15000
+  refreshTokenExpTime: 60000
+  tokenIssuer: http://kinoman.oltinolma.uz
+  tokenSigningKey: 7a50f044da25a0f071f3c3db105d9a02
+spring:
+  data:
+    elasticsearch:
+      cluster-nodes: 192.168.0.50:9300
+  datasource.dbcp2:
+    driver-class-name: org.h2.Driver
+    username: tester
+    password: tester
+    url: jdbc:h2:mem:test_pg
+    initial-size: 0
+    max-total: 12
+    max-idle: 12
+  h2:
+    console:
+      enabled: true
+      path: /search/console
+      settings:
+        trace: false
+        web-allow-others: false
+    datasource:
+      url: jdbc:h2:mem:test_h2
+      username: tester
+      password: tester
+      driver-class-name: org.h2.Driver
+      init-sql: h2.sql
+  servlet:
+      multipart:
+        enabled: true
+        file-size-threshold: 2KB
+        max-file-size: 200MB
+        max-request-size: 215MB
+  banner:
+    location: banner.txt
+
+logging:
+  config: "classpath:log4j2.properties"
+
+server:
+  port: 7576
+  compression:
+    enabled: true
+    min-response-size: 2048
+    mime-types: application/json, application/xml,text/html,text/plain
+
+elasticsearch:
+  clustername : ${kinoman.elasticsearch.cluster.name}
+  host : ${kinoman.host}
+  port : 9300
+  node: ${kinoman.elasticsearch.node}
+
+rabbitmq:
+  host: ${kinoman.host}
+  username: ${kinoman.rabbitmq.username}
+  password: ${kinoman.rabbitmq.password}
+  port: 5672
+
+file.uploadDir: ./kinoman-resources
+
+
+
+
+

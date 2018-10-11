@@ -3,6 +3,7 @@ package uz.oltinolma.producer.elasticsearch.search;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.FuzzyQueryBuilder;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractSearchHelper {
     @Autowired
-    protected TransportClient client;
+    protected Client client;
 
     protected SearchRequest searchRequest(QueryBuilder queryBuilder, String... indices) {
         SearchSourceBuilder search = new SearchSourceBuilder();
