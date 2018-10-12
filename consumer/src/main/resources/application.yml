@@ -2,15 +2,15 @@ server:
   port: 8787
 #rabbit mq config
 rabbitmq:
-  host: ${RABBITMQ_HOST}
-  username: ${RABBITMQ_USER}
-  password: ${RABBITMQ_PASSWORD}
+  host: ${KINOMAN_RABBITMQ_HOST}
+  username: ${KINOMAN_RABBITMQ_USER}
+  password: ${KINOMAN_RABBITMQ_PASSWORD}
   port: 5672
 #database
 spring.datasource.dbcp2:
   driver-class-name: org.postgresql.Driver
-  username: ${POSTGRES_USER}
-  password: ${POSTGRES_PASSWORD}
+  username: ${KINOMAN_PG_USER}
+  password: ${KINOMAN_PG_PASSWORD}
   url: "jdbc:postgresql://${KINOMAN_HOST}:5432/dk"
   initial-size: 0
   max-total: 12
