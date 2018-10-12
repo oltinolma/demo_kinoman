@@ -10,9 +10,9 @@ spring:
       cluster-nodes: 192.168.0.50:9300
   datasource.dbcp2:
     driver-class-name: org.postgresql.Driver
-    username: ${kinoman.pg.user}
-    password: ${kinoman.pg.password}
-    url: "jdbc:postgresql://${kinoman.host}:5432/dk"
+    username: ${KINOMAN_PG_USER}
+    password: ${KINOMAN_PG_PASSWORD}
+    url: "jdbc:postgresql://${KINOMAN_HOST}:5432/dk"
     initial-size: 0
     max-total: 12
     max-idle: 12
@@ -49,15 +49,15 @@ server:
     mime-types: application/json, application/xml,text/html,text/plain
 
 elasticsearch:
-  clustername : ${kinoman.elasticsearch.cluster.name}
-  host : ${kinoman.host}
+  clustername : ${KINOMAN_EL_CLUSTERNAME}
+  host : ${KINOMAN_EL_HOST}
   port : 9300
-  node: ${kinoman.elasticsearch.node}
+  node: ${KINOMAN_EL_NODE}
 
 rabbitmq:
-  host: ${kinoman.host}
-  username: ${kinoman.rabbitmq.username}
-  password: ${kinoman.rabbitmq.password}
+  host: ${KINOMAN_RABBITMQ_HOST}
+  username: ${KINOMAN_RABBITMQ_USER}
+  password: ${KINOMAN_RABBITMQ_PASSWORD}
   port: 5672
 
 file.uploadDir: ./kinoman-resources

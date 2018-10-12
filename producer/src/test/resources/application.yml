@@ -1,0 +1,29 @@
+demo.security.jwt:
+  tokenExpirationTime: 15000
+  refreshTokenExpTime: 60000
+  tokenIssuer: http://kinoman.oltinolma.uz
+  tokenSigningKey: 7a50f044da25a0f071f3c3db105d9a02
+spring:
+  datasource.dbcp2:
+    driver-class-name: org.h2.Driver
+    username: tester
+    password: tester
+    url: jdbc:h2:mem:test_pg
+    initial-size: 0
+    max-total: 12
+    max-idle: 12
+  h2:
+    datasource:
+      url: jdbc:h2:mem:test_h2
+      username: tester
+      password: tester
+      driver-class-name: org.h2.Driver
+      init-sql: h2.sql
+
+
+
+
+
+
+
+

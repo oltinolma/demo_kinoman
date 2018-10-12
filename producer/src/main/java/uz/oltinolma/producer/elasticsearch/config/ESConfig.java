@@ -1,5 +1,6 @@
 package uz.oltinolma.producer.elasticsearch.config;
 
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -28,7 +29,7 @@ public class ESConfig {
     private String EsClusterName;
 
     @Bean
-    public TransportClient client() throws Exception {
+    public Client client() throws Exception {
 
         Settings esSettings = Settings.builder()
                 .put("cluster.name", EsClusterName)
