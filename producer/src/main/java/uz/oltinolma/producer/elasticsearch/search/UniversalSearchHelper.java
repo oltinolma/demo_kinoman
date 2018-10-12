@@ -14,22 +14,13 @@ import java.util.List;
 public class UniversalSearchHelper extends AbstractSearchHelper {
     public List<SearchResult> searchForMovieOrTaxonomy(String term) {
         List<SearchResult> results = ngramMatchSearchForMovieOrTaxonomy(term);
+
         if (results.isEmpty()) {
             term = ifMultipleWordsChooseLongestOne(term);
             results = fuzzySearchForMovieOrTaxonomy(term);
         }
 
         return results;
-    }
-
-    private String ifMultipleWordsChooseLongestOne(String term) {
-        String[] words = term.trim().split("\\s+");
-        if (words.length > 1) {
-            term = Arrays.asList(words)
-                    .stream()
-                    .max((s1, s2) -> s2.length() - s1.length()).get();
-        }
-        return term;
     }
 
     private List<SearchResult> ngramMatchSearchForMovieOrTaxonomy(String term) {

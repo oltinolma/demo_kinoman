@@ -12,6 +12,8 @@ public class SearchController {
     private ActorSearchHelper actorSearchQueries;
     @Autowired
     private UniversalSearchHelper universalSearchQueries;
+    @Autowired
+    private CountrySearchHelper countrySearchHelper;
 
     @RequestMapping("/movie/or/taxonomy")
     public Object searchMovieOrTaxonomy(@RequestParam String term) {
@@ -21,5 +23,10 @@ public class SearchController {
     @RequestMapping("/actor")
     public Object suggestActors(@RequestParam String term) {
         return actorSearchQueries.searchForActors(term.toLowerCase());
+    }
+
+    @RequestMapping("/country")
+    public Object suggestCountries(@RequestParam String term) {
+        return countrySearchHelper.searchForCountry(term.toLowerCase());
     }
 }

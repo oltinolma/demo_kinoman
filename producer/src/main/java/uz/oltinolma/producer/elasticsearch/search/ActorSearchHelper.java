@@ -14,15 +14,34 @@ import java.util.List;
 public class ActorSearchHelper extends AbstractSearchHelper {
 
     public List<SearchResult> searchForActors(String term) {
-        SearchRequest request = searchRequest(actorsFuzzySearch(term, "name"), "taxonomy_index");
-        ActionFuture<SearchResponse> r = client.search(request);
-        return getTopTen(r.actionGet(2000));
+        List<SearchResult> actors = actorsNgramSearch(term);
+
+        if (actors.isEmpty()) {
+            actors = actorsFuzzySearch(ifMultipleWordsChooseLongestOne(term));
+        }
+        return actors;
     }
 
-    private QueryBuilder actorsFuzzySearch(String term, String field) {
+    private List<SearchResult> actorsFuzzySearch(String term) {
         QueryBuilder fuzzy = QueryBuilders.boolQuery()
                 .filter(QueryBuilders.matchQuery("taxonomy", "actors"))
-                .must(QueryBuilders.fuzzyQuery(field, term).fuzziness(Fuzziness.TWO).boost(0.9f));
-        return fuzzy;
+                .must(QueryBuilders.fuzzyQuery("name", term));
+
+        SearchRequest request = searchRequest(fuzzy, "taxonomy_index");
+        ActionFuture<SearchResponse> r = client.search(request);
+        r = client.search(request);
+        return getTopTen(r.actionGet(2000));
+
+    }
+
+    private List<SearchResult> actorsNgramSearch(String term) {
+        QueryBuilder ngram = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.matchQuery("taxonomy", "actors"))
+                .must(QueryBuilders.matchQuery("name", term));
+
+        SearchRequest request = searchRequest(ngram, "taxonomy_index");
+        ActionFuture<SearchResponse> r = client.search(request);
+        r = client.search(request);
+        return getTopTen(r.actionGet(2000));
     }
 }
