@@ -3,16 +3,14 @@ package uz.oltinolma.producer.elasticsearch.index.taxonomy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(type = "taxonomy", indexName = "taxonomy_index")
 public class Taxonomy {
     @Id
     private int id;
-    @Field
     private String name;
-    @Field
     private int id_parent;
-    @Field
     private String taxonomy;
 
     public int getId() {

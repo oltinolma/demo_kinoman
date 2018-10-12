@@ -3,6 +3,7 @@ package uz.oltinolma.producer.elasticsearch.index.movie;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.UUID;
 
@@ -10,9 +11,7 @@ import java.util.UUID;
 public class Movie {
     @Id
     private UUID id;
-    @Field
     private String name;
-    @Field
     private String full_name;
 
     public UUID getId() {

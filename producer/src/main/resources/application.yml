@@ -5,9 +5,6 @@ demo.security.jwt:
   tokenIssuer: http://kinoman.oltinolma.uz
   tokenSigningKey: 7a50f044da25a0f071f3c3db105d9a02
 spring:
-  data:
-    elasticsearch:
-      cluster-nodes: 192.168.0.50:9300
   datasource.dbcp2:
     driver-class-name: org.postgresql.Driver
     username: ${KINOMAN_PG_USER}
