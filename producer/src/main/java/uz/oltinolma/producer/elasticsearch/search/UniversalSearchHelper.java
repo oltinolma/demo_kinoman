@@ -7,7 +7,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
