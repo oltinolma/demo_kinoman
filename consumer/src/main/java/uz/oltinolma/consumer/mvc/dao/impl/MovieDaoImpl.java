@@ -7,9 +7,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import uz.oltinolma.consumer.mvc.dao.MovieDao;
+import uz.oltinolma.consumer.mvc.model.Movie;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -45,6 +47,22 @@ public class MovieDaoImpl implements MovieDao {
             if(resultSet.next())
                 return resultSet.getString("get_json_from_movie_id");
             else return null;
+        });
+    }
+
+    @Override
+    public List<Movie> list() {
+        String sql = "select * from movies";
+        return namedParameterJdbcTemplate.query(sql, (rs,i)-> {
+            Movie m = new Movie();
+            m.setId((UUID) rs.getObject("id"));
+            m.setName(rs.getString("name"));
+            m.setCreatedDate(rs.getLong("created_date"));
+            m.setReleasedDate(rs.getDate("release_date"));
+            m.setFullName(rs.getString("full_name"));
+            m.setAgeRating(rs.getString("age_rating"));
+            m.setDescription(rs.getString("description"));
+            return m;
         });
     }
 }

@@ -25,7 +25,7 @@ public abstract class RolesPermissionsService {
         return getDao().get(id);
     }
 
-    public abstract BaseResponse insert(RolesPermissions rolesPermissions);
+    public abstract void insert(RolesPermissions rolesPermissions);
 
     @Transactional
     public BaseResponse insertAll(List<RolesPermissions> rolesPermissions) {

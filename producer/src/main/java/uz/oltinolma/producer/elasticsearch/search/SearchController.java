@@ -21,8 +21,8 @@ public class SearchController {
 
     @RequestMapping("/taxonomy")
     public Object suggestTaxonomy(@RequestParam String term, @RequestParam String parent) {
-        Assert.notNull(term, "term cannot be null");
-        Assert.notNull(parent, "parent cannot be null");
+        Assert.notNull(term, "Request param 'term' cannot be null");
+        Assert.notNull(parent, "Request param  'parent' cannot be null");
         return taxonomySearchHelper.searchForTaxonomy(term.toLowerCase(), parent.toLowerCase());
     }
 }

@@ -25,9 +25,10 @@ public class PermissionServicePostgresImpl extends PermissionService {
         this.permissionDao = permissionDaoPostgresImpl;
     }
 
-    public BaseResponse insert(Permissions permissions) {
+    public void insert(Permissions permissions) {
+        int id = permissionDao.insert(permissions);
+        permissions.setId(id);
         permissionServiceH2Impl.insert(permissions);
-        return permissionDao.insert(permissions);
     }
 
     public BaseResponse update(Permissions permissions) {

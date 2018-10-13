@@ -19,8 +19,8 @@ public class PermissionServiceH2Impl extends PermissionService {
         this.permissionDao = permissionDaoH2Impl;
     }
 
-    public BaseResponse insert(Permissions permissions) {
-        return permissionDao.insert(permissions);
+    public void insert(Permissions permissions) {
+        permissionDao.insert(permissions);
     }
 
     public BaseResponse update(Permissions permissions) {
