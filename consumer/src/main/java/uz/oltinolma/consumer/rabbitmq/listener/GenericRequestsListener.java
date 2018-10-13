@@ -56,12 +56,16 @@ public class GenericRequestsListener {
                     break;
                 case "request.taxonomy.menu.list":
                     System.out.println("taxonomy menu list");
-                    response =  taxonomyService.listForInputLabels();
+                    response = taxonomyService.listForInputLabels();
                     break;
                 case "request.movie.info.by.id":
                     System.out.println("movie info as json");
                     UUID id_movie = UUID.fromString(String.valueOf(message.getParams().get("id")));
                     response = movieService.movieInfoById(id_movie);
+                    break;
+                case "request.movie.list":
+                    System.out.println("list of all movies");
+                    response = new ResponseWrapper(movieService.list()).toJSON();
                     break;
                 default:
                     System.out.println("default case");
