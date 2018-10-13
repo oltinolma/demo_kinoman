@@ -19,8 +19,8 @@ public class RolesPermissionsServiceH2Impl extends RolesPermissionsService {
         this.dao = rolesPermissionsDaoH2Impl;
     }
 
-    public BaseResponse insert(RolesPermissions rolesPermissions) {
-        return dao.insert(rolesPermissions);
+    public void insert(RolesPermissions rolesPermissions) {
+        dao.insert(rolesPermissions);
     }
 
     public BaseResponse update(RolesPermissions rolesPermissions) {

@@ -52,10 +52,7 @@ public abstract class PermissionDao {
         throw new UnsupportedOperationException();
     }
 
-    /**@Override in order to use */
-    public BaseResponse insert(Permissions permissions) {
-       throw new UnsupportedOperationException();
-    }
+    public abstract int insert(Permissions permissions);
 
     public BaseResponse update(Permissions permissions) {
         Map<String, Object> map = new HashMap<String, Object>();

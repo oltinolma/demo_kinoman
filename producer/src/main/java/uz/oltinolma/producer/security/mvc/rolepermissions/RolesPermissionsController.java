@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import uz.oltinolma.producer.security.common.BaseResponses;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.role.Role;
 import uz.oltinolma.producer.security.mvc.rolepermissions.service.RolesPermissionsService;
@@ -21,6 +22,8 @@ public class RolesPermissionsController {
     private RolesPermissionsService rolesPermissionsServiceH2Impl;
     @Autowired
     private RolesPermissionsService rolesPermissionsServicePostgresImpl;
+    @Autowired
+    private BaseResponses baseResponses;
 
     @PreAuthorize("@SecurityPermission.hasPermission('role_permission.list')")
     @ApiOperation(value = "Huquqlarga mos ruhsatlar ro'yxatini olish", response = RolesPermissions.class, responseContainer = "List")
@@ -53,9 +56,10 @@ public class RolesPermissionsController {
 
     @PreAuthorize("@SecurityPermission.hasPermission('role_permission.insert')")
     @ApiOperation(value = "Yangi huquqga mos ruhsat kiritish", response = BaseResponse.class)
-    @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse insert(@Validated @RequestBody RolesPermissions rolesPermissions) {
-        return rolesPermissionsServicePostgresImpl.insert(rolesPermissions);
+        rolesPermissionsServicePostgresImpl.insert(rolesPermissions);
+        return baseResponses.successMessage();
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('role_permission.delete')")

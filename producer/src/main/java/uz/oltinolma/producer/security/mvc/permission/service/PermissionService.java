@@ -23,7 +23,7 @@ public abstract class PermissionService {
         return getPermissionDao().get(id);
     }
 
-    public abstract BaseResponse insert(Permissions permissions);
+    public abstract void insert(Permissions permissions);
 
     @Transactional
     public BaseResponse insertAll(List<Permissions> roles) {

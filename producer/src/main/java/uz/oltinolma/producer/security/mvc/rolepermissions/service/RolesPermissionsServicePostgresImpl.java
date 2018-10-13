@@ -12,6 +12,7 @@ public class RolesPermissionsServicePostgresImpl extends RolesPermissionsService
     private RolesPermissionsDao dao;
     @Autowired
     private RolesPermissionsService rolesPermissionsServiceH2Impl;
+
     public RolesPermissionsDao getDao() {
         return dao;
     }
@@ -21,9 +22,10 @@ public class RolesPermissionsServicePostgresImpl extends RolesPermissionsService
         this.dao = rolesPermissionsDaoPostgresImpl;
     }
 
-    public BaseResponse insert(RolesPermissions rolesPermissions) {
+    public void insert(RolesPermissions rolesPermissions) {
+        int id = dao.insert(rolesPermissions);
+        rolesPermissions.setId(id);
         rolesPermissionsServiceH2Impl.insert(rolesPermissions);
-        return dao.insert(rolesPermissions);
     }
 
     public BaseResponse update(RolesPermissions rolesPermissions) {

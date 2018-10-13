@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import uz.oltinolma.producer.security.common.BaseResponses;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDaoH2Impl;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
@@ -27,6 +28,8 @@ public class PermissionsController {
 
     @Autowired
     private PermissionDaoH2Impl permissionDaoH2;
+    @Autowired
+    private BaseResponses baseResponses;
 
 //    @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
     @RequestMapping(value = "/mine", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
@@ -71,7 +74,8 @@ public class PermissionsController {
     @ApiOperation(value = "Yangi ruxsat kiritish", response = Permissions.class)
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public BaseResponse insert(@Validated @RequestBody Permissions permissions) {
-        return permissionServicePostgresImpl.insert(permissions);
+        permissionServicePostgresImpl.insert(permissions);
+        return baseResponses.successMessage();
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.delete')")
