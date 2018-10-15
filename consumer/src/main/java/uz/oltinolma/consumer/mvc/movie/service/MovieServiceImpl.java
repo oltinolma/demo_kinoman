@@ -1,10 +1,10 @@
-package uz.oltinolma.consumer.mvc.service.impl;
+package uz.oltinolma.consumer.mvc.movie.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.oltinolma.consumer.mvc.dao.MovieDao;
-import uz.oltinolma.consumer.mvc.model.Movie;
-import uz.oltinolma.consumer.mvc.service.MovieService;
+import uz.oltinolma.consumer.mvc.movie.dao.MovieDao;
+import uz.oltinolma.consumer.mvc.movie.Movie;
+import uz.oltinolma.consumer.mvc.movie.service.MovieService;
 
 import java.util.List;
 import java.util.UUID;

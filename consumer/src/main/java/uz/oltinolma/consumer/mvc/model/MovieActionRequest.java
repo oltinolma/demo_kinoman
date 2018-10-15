@@ -1,5 +1,8 @@
 package uz.oltinolma.consumer.mvc.model;
 
+import uz.oltinolma.consumer.mvc.movie.Movie;
+import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
+
 import java.util.List;
 import java.util.UUID;
 

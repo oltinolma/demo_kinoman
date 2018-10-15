@@ -2,12 +2,10 @@ package uz.oltinolma.consumer.rabbitmq.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uz.oltinolma.consumer.mvc.dao.MovieDao;
-import uz.oltinolma.consumer.mvc.dao.TaxonomyDao;
 import uz.oltinolma.consumer.mvc.model.Message;
 import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
-import uz.oltinolma.consumer.mvc.service.MovieService;
-import uz.oltinolma.consumer.mvc.service.TaxonomyService;
+import uz.oltinolma.consumer.mvc.movie.service.MovieService;
+import uz.oltinolma.consumer.mvc.taxonomy.service.TaxonomyService;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;

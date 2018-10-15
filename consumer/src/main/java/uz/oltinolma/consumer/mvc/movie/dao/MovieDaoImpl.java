@@ -1,4 +1,4 @@
-package uz.oltinolma.consumer.mvc.dao.impl;
+package uz.oltinolma.consumer.mvc.movie.dao;
 
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import uz.oltinolma.consumer.mvc.dao.MovieDao;
-import uz.oltinolma.consumer.mvc.model.Movie;
+import uz.oltinolma.consumer.mvc.movie.dao.MovieDao;
+import uz.oltinolma.consumer.mvc.movie.Movie;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

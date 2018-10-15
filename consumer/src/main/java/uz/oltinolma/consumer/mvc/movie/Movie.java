@@ -1,4 +1,4 @@
-package uz.oltinolma.consumer.mvc.model;
+package uz.oltinolma.consumer.mvc.movie;
 
 import java.sql.Date;
 import java.util.UUID;
