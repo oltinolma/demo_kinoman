@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import uz.oltinolma.producer.security.common.LogUtil;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
@@ -17,27 +18,25 @@ import java.util.Map;
 public class RoleDaoPostgresImpl extends RoleDao {
     private static final Logger logger = LogUtil.getInstance();
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private SimpleJdbcInsert roleInsert;
 
     @Autowired
     @Qualifier("datasource")
     public void setDataSource(javax.sql.DataSource dataSource) {
-        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        roleInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("role")
+                .usingGeneratedKeyColumns("id");
     }
-    public BaseResponse insert(Role role) {
+
+    /**
+     * @return generated for new record
+     */
+    public int insert(Role role) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", role.getName());
         map.put("id_status", role.getId_status());
-        String sql = "INSERT INTO roles(name, id_status) VALUES (:name, :id_status)";
-        try {
-            getTemplate().update(sql, map);
-        } catch (DuplicateKeyException d) {
-            logger.error("Couldn't insert the role into postgresql", d);
-            return baseResponses.duplicateKeyErrorResponse(role.getName());
-        } catch (Exception e) {
-            logger.error("Couldn't insert the role into postgresql", e);
-            return baseResponses.serverErrorResponse();
-        }
-        return baseResponses.successMessage();
+        return roleInsert.executeAndReturnKey(map).intValue();
     }
 
     public NamedParameterJdbcTemplate getTemplate() {
