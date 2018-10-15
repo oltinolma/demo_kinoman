@@ -26,7 +26,9 @@ public class PermissionDaoPostgresImpl extends PermissionDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    /**@return int generated id for the record*/
+    /**
+     * @return int generated id for the record
+     */
     public int insert(Permissions permissions) {
         Map<String, Object> map = new HashMap<>();
         map.put("name", permissions.getName());

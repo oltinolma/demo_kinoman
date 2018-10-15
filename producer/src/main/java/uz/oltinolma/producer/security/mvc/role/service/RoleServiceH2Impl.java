@@ -20,7 +20,7 @@ public class RoleServiceH2Impl extends RoleService {
         return roleDaoH2Impl;
     }
 
-    public BaseResponse insert(Role role) {
+    public int insert(Role role) {
         return roleDaoH2Impl.insert(role);
     }
 

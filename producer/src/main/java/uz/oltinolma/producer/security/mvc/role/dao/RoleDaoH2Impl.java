@@ -46,4 +46,15 @@ public class RoleDaoH2Impl extends RoleDao {
         }
         return baseResponses.successMessage();
     }
+
+    /**
+     * @return number of affected rows
+     */
+    public int insert(Role role) {
+        String sql = "INSERT INTO role(id, name) VALUES(:id, :name)";
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("name", role.getName());
+        map.put("id", role.getId());
+        return getTemplate().update(sql, map);
+    }
 }

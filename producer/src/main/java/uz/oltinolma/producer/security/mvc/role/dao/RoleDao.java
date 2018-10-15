@@ -47,10 +47,7 @@ public abstract class RoleDao {
         throw new UnsupportedOperationException();
     }
 
-    /**@Override in order to use */
-    public BaseResponse insert(Role role) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract int insert(Role role);
 
     public BaseResponse update(Role role) {
         Map<String, Object> map = new HashMap<String, Object>();
