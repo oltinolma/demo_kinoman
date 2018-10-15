@@ -1,6 +1,6 @@
-package uz.oltinolma.consumer.mvc.service;
+package uz.oltinolma.consumer.mvc.movie.service;
 
-import uz.oltinolma.consumer.mvc.model.Movie;
+import uz.oltinolma.consumer.mvc.movie.Movie;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package uz.oltinolma.consumer.mvc.dao;
+package uz.oltinolma.consumer.mvc.movie.dao;
 
 
-import uz.oltinolma.consumer.mvc.model.Movie;
+import uz.oltinolma.consumer.mvc.movie.Movie;
 
 import java.util.List;
 import java.util.UUID;
