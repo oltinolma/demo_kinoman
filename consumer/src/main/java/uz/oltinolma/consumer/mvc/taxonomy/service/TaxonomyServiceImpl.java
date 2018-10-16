@@ -1,9 +1,8 @@
-package uz.oltinolma.consumer.mvc.service.impl;
+package uz.oltinolma.consumer.mvc.taxonomy.service;
 
-import uz.oltinolma.consumer.mvc.dao.TaxonomyDao;
+import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
+import uz.oltinolma.consumer.mvc.taxonomy.dao.TaxonomyDao;
 import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
-import uz.oltinolma.consumer.mvc.model.Taxonomy;
-import uz.oltinolma.consumer.mvc.service.TaxonomyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

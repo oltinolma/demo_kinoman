@@ -1,7 +1,7 @@
-package uz.oltinolma.consumer.mvc.service;
+package uz.oltinolma.consumer.mvc.taxonomy.service;
 
 import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
-import uz.oltinolma.consumer.mvc.model.Taxonomy;
+import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
 
 import java.util.List;
 

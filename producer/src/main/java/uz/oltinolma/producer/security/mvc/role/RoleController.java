@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import uz.oltinolma.producer.security.common.BaseResponses;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.role.service.RoleService;
 
@@ -15,7 +16,8 @@ import java.util.List;
 @Api(value = "x-market", description = "Huquqlar bilan bog'liq operatsiyalar")
 @RequestMapping(value = "/role")
 public class RoleController {
-
+    @Autowired
+    private BaseResponses baseResponses;
     @Autowired
     private RoleService roleServiceH2Impl;
     @Autowired
@@ -40,7 +42,8 @@ public class RoleController {
     @ApiOperation(value = "Yangi huquq yaratish", response = BaseResponse.class)
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public BaseResponse insert(@Validated @RequestBody Role role) {
-        return roleServicePostgresImpl.insert(role);
+        roleServicePostgresImpl.insert(role);
+        return baseResponses.successMessage();
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('role.insert')")

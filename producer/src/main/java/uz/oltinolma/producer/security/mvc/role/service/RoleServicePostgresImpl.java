@@ -2,6 +2,7 @@ package uz.oltinolma.producer.security.mvc.role.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.role.Role;
 import uz.oltinolma.producer.security.mvc.role.dao.RoleDao;
@@ -21,9 +22,11 @@ public class RoleServicePostgresImpl extends RoleService {
         return roleDaoPostgresImpl;
     }
 
-    public BaseResponse insert(Role role) {
-        roleServiceH2Impl.insert(role);
-        return roleDaoPostgresImpl.insert(role);
+    @Transactional
+    public int insert(Role role) {
+        int id = roleDaoPostgresImpl.insert(role);
+        role.setId((long) id);
+        return roleServiceH2Impl.insert(role);
     }
 
     public BaseResponse update(Role role) {

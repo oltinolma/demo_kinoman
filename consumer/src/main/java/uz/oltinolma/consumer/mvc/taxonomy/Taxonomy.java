@@ -1,4 +1,4 @@
-package uz.oltinolma.consumer.mvc.model;
+package uz.oltinolma.consumer.mvc.taxonomy;
 
 public class Taxonomy {
 

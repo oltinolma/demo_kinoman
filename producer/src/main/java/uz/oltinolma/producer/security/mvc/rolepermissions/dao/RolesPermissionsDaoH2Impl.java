@@ -3,6 +3,7 @@ package uz.oltinolma.producer.security.mvc.rolepermissions.dao;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import uz.oltinolma.producer.security.common.LogUtil;
@@ -50,5 +51,15 @@ public class RolesPermissionsDaoH2Impl extends RolesPermissionsDao {
             return baseResponses.serverErrorResponse();
         }
         return baseResponses.successMessage();
+    }
+
+    public int insert(RolesPermissions rolesPermissions) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", rolesPermissions.getId());
+        map.put("id_permission", rolesPermissions.getId_permission());
+        map.put("id_role", rolesPermissions.getId_role());
+        String sql = "INSERT INTO role_permission(id, id_permission,id_role) VALUES (:id, :id_permission,:id_role)";
+
+        return this.template.update(sql, map);
     }
 }

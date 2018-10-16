@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import uz.oltinolma.producer.security.common.LogUtil;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
@@ -16,10 +17,12 @@ import java.util.Map;
 public class RolesPermissionsDaoPostgresImpl extends RolesPermissionsDao {
     private static final Logger logger = LogUtil.getInstance();
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private SimpleJdbcInsert rpInsert;
 
     @Autowired
     public void setDataSource(javax.sql.DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        rpInsert = new SimpleJdbcInsert(dataSource).withTableName("role_permission").usingGeneratedKeyColumns("id");
     }
 
     public NamedParameterJdbcTemplate getTemplate() {
@@ -27,21 +30,11 @@ public class RolesPermissionsDaoPostgresImpl extends RolesPermissionsDao {
     }
 
     @Override
-    public BaseResponse insert(RolesPermissions rolesPermissions) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id_permission", rolesPermissions.getId_permission());
-        map.put("id_role", rolesPermissions.getId_role());
-        String sql = "INSERT INTO roles_permissions(id_permission,id_role) VALUES (:id_permission,:id_role)";
-        try {
-            this.namedParameterJdbcTemplate.update(sql, map);
-        } catch (DuplicateKeyException d) {
-            logger.error("Couldn't insert rolesPermissions into postgresql.", d);
-            return baseResponses.duplicateKeyErrorResponse("");
-        } catch (Exception e) {
-            logger.error("Couldn't insert rolesPermissions into postgresql.", e);
-            return baseResponses.serverErrorResponse();
-        }
-        return baseResponses.successMessage();
+    public int insert(RolesPermissions rolesPermissions) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id_permission", rolesPermissions.getId_permission());
+        params.put("id_role", rolesPermissions.getId_role());
+        return rpInsert.executeAndReturnKey(params).intValue();
     }
 
 }

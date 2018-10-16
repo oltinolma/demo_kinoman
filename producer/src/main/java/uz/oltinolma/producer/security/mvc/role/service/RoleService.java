@@ -20,7 +20,7 @@ public abstract class RoleService {
         return getRoleDao().getRoleById(id);
     }
 
-    public abstract BaseResponse insert(Role role);
+    public abstract int insert(Role role);
     @Transactional
     public BaseResponse insertAll(List<Role> roles) {
         return getRoleDao().insertAll(roles);

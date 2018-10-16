@@ -32,3 +32,6 @@ public class MovieActionRequest {
         this.taxonomies = taxonomies;
     }
 }
+        this.taxonomies = taxonomies;
+    }
+}

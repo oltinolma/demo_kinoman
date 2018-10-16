@@ -3,6 +3,7 @@ package uz.oltinolma.producer.elasticsearch.search;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.FuzzyQueryBuilder;
@@ -12,13 +13,14 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 public abstract class AbstractSearchHelper {
     @Autowired
-    protected TransportClient client;
+    protected Client client;
 
     protected SearchRequest searchRequest(QueryBuilder queryBuilder, String... indices) {
         SearchSourceBuilder search = new SearchSourceBuilder();
@@ -56,5 +58,15 @@ public abstract class AbstractSearchHelper {
 
         results.sort((searchResult1, searchResult2) -> (int) (searchResult2.getScore() - searchResult1.getScore()));
         return results.stream().filter(sr -> sr.getTaxonomy() != null).limit(10).collect(Collectors.toList());
+    }
+
+    protected String ifMultipleWordsChooseLongestOne(String term) {
+        String[] words = term.trim().split("\\s+");
+        if (words.length > 1) {
+            term = Arrays.asList(words)
+                    .stream()
+                    .max((s1, s2) -> s2.length() - s1.length()).get();
+        }
+        return term;
     }
 }

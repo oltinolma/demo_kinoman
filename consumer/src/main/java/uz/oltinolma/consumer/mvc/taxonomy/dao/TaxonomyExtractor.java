@@ -1,6 +1,6 @@
-package uz.oltinolma.consumer.mvc.dao;
+package uz.oltinolma.consumer.mvc.taxonomy.dao;
 
-import uz.oltinolma.consumer.mvc.model.Taxonomy;
+import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

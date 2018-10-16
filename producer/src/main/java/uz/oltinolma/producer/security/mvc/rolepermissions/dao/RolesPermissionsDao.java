@@ -57,9 +57,7 @@ public abstract class RolesPermissionsDao {
         throw new UnsupportedOperationException();
     }
     /**Override in order to use */
-    public BaseResponse insert(RolesPermissions rolesPermissions) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract int insert(RolesPermissions rolesPermissions);
 
 
     public BaseResponse update(RolesPermissions rolesPermissions) {
