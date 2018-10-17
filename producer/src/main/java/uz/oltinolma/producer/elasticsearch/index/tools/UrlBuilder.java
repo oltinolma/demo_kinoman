@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 
 public class UrlBuilder {
     private String protocol = "http://";
-    private String host = System.getenv("kinoman.host");
+    private String host = System.getenv("KINOMAN_EL_HOST");
     int port = 9200;
 
     public UrlBuilder(String protocol, String host, int port) {

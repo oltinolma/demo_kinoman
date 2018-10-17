@@ -1,8 +1,20 @@
 package uz.oltinolma.producer.elasticsearch.index.tools;
 
+import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.analysis.Analysis;
+import org.elasticsearch.index.mapper.Mapping;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +32,6 @@ public class IndexingTools {
         this.restTemplate = restTemplate;
     }
 
-    public void createIndex() throws URISyntaxException {
-        validateFields();
-        //sorry for toArray. It is the most stupid API from Oracle
-        restTemplate.put(urlBuilder.urlForIndex(indexName), indexWithEdge_ngramFilter(fields.toArray(new String[0])));
-        System.out.println(indexWithEdge_ngramFilter(fields.toArray(new String[0])));
-    }
 
     public void deleteIndexIfExists() throws URISyntaxException {
         restTemplate.delete(urlBuilder.urlForIndex(indexName));
@@ -36,57 +42,6 @@ public class IndexingTools {
         Assert.notEmpty(fields, "Index fields cannot be empty.");
     }
 
-    private String indexWithEdge_ngramFilter(String... fields) {
-        String filterName = analyzerName + "_filter";
-        String json = "{\n" +
-                "  \"settings\": {\n" +
-                "    \"analysis\": {\n" +
-                "      \"filter\": {\n" +
-                "        \"" + filterName + "\": {\n" +
-                "          \"type\": \"edge_ngram\",\n" +
-                "          \"min_gram\": 1,\n" +
-                "          \"max_gram\": 20\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"analyzer\": {\n" +
-                "        \"" + analyzerName + "\": { \n" +
-                "          \"type\": \"custom\",\n" +
-                "          \"tokenizer\": \"standard\",\n" +
-                "          \"filter\": [\n" +
-                "            \"lowercase\",\n" +
-                "            \"" + filterName + "\"\n" +
-                "          ]\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"mappings\": {\n" +
-                "    \"" + type + "\": {\n" +
-                "      \"properties\": {\n" +
-                         properties(fields) +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-        return json;
-    }
-
-
-    private String textProperty(String name) {
-        String json = " \"" + name + "\": {\n" +
-                "          \"type\": \"text\",\n" +
-                "          \"analyzer\": \"" + analyzerName + "\", \n" +
-                "          \"search_analyzer\": \"standard\" \n" +
-                "        }";
-        return json;
-    }
-
-    private String properties(String... fields) {
-        StringJoiner joiner = new StringJoiner(",");
-        for (String field : fields)
-            joiner.add(textProperty(field));
-        return joiner.toString();
-    }
 
     public IndexingTools setIndexName(String indexName) {
         this.indexName = indexName;
@@ -110,4 +65,83 @@ public class IndexingTools {
             this.fields.add(field);
         return this;
     }
+
+    public String indexWithEdge_ngramFilter(Client client) throws IOException {
+        validateFields();
+        CreateIndexRequest cir = new CreateIndexRequest();
+        cir.index(indexName);
+        cir.source(source());
+        ActionFuture<CreateIndexResponse> res = client.admin().indices().create(cir);
+        CreateIndexResponse response = res.actionGet(5000);
+        System.out.println("INDEX : " + response.index());
+        System.out.println("INDEX isShardsAcked : " + response.isShardsAcked());
+        return source().string();
+
+    }
+
+
+    public XContentBuilder source() throws IOException {
+        String filterName = analyzerName + "_filter";
+        XContentBuilder builder = XContentFactory.jsonBuilder();
+        builder.startObject();
+        {
+            builder.startObject("settings");
+            {
+                builder.startObject("analysis");
+                {
+                    builder.startObject("filter");
+                    {
+                        builder.startObject(filterName);
+                        {
+                            builder.field("type", "edge_ngram");
+                            builder.field("min_gram", 1);
+                            builder.field("max_gram", 20);
+                        }
+                        builder.endObject();
+                    }
+                    builder.endObject();
+                    builder.startObject("analyzer");
+                    {
+                        builder.startObject(analyzerName);
+                        {
+                            builder.field("type", "custom");
+                            builder.field("tokenizer", "standard");
+                            builder.array("filter", "lowercase", filterName);
+                        }
+                        builder.endObject();
+                    }
+                    builder.endObject();
+                }
+                builder.endObject();
+            }
+            builder.endObject();
+            builder.startObject("mappings");
+            {
+                builder.startObject(type);
+                {
+                    builder.startObject("properties");
+                    {
+
+                        for (String field : fields) {
+                            builder.startObject(field);
+                            {
+                                builder.field("type", "text");
+                                builder.field("analyzer", analyzerName);
+                                builder.field("search_analyzer", "standard");
+                            }
+                            builder.endObject();
+                        }
+
+                    }
+                    builder.endObject();
+                }
+                builder.endObject();
+            }
+            builder.endObject();
+        }
+        builder.endObject();
+
+        return builder;
+    }
 }
+

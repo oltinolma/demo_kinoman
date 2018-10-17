@@ -1,11 +1,11 @@
 package uz.oltinolma.producer.elasticsearch.index.movie;
 
+import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import uz.oltinolma.producer.elasticsearch.index.tools.IndexingTools;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 @Service
@@ -16,6 +16,8 @@ public class MovieService {
     private MovieElasticsearchRepository elasticsearch;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private Client client;
 
     public void index(Movie movie) {
         elasticsearch.save(movie);
@@ -42,7 +44,7 @@ public class MovieService {
                     .addField("name")
                     .addField("full_name");
             indexingTools.deleteIndexIfExists();
-            indexingTools.createIndex();
+            indexingTools.indexWithEdge_ngramFilter(client);
         } catch (Exception e) {
             e.printStackTrace();
         }
