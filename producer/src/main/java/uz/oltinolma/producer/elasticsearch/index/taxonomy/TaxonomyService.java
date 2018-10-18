@@ -3,10 +3,8 @@ package uz.oltinolma.producer.elasticsearch.index.taxonomy;
 import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import uz.oltinolma.producer.elasticsearch.index.tools.IndexingTools;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -15,8 +13,6 @@ public class TaxonomyService {
     private TaxonomyPgRepository postgres;
     @Autowired
     private TaxonomyElasticsearchRepository elasticsearch;
-    @Autowired
-    private RestTemplate restTemplate;
     @Autowired
     private Client client;
 
@@ -40,12 +36,14 @@ public class TaxonomyService {
 
     private void prepareIndex(){
         try {
-            IndexingTools indexingTools = new IndexingTools(restTemplate).setAnalyzerName("autocomplete")
+            IndexingTools indexingTools = new IndexingTools()
+                    .setClient(client)
+                    .setAnalyzerName("autocomplete")
                     .setIndexName("taxonomy_index")
                     .setType("taxonomy")
                     .addField("name");
             indexingTools.deleteIndexIfExists();
-            indexingTools.indexWithEdge_ngramFilter(client);
+            indexingTools.indexWithEdge_ngramAnalyzer();
         } catch (Exception e) {
             e.printStackTrace();
         }

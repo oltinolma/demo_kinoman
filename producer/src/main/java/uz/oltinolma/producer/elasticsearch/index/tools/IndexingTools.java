@@ -3,6 +3,9 @@ package uz.oltinolma.producer.elasticsearch.index.tools;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Setting;
@@ -21,27 +24,32 @@ import java.util.List;
 import java.util.StringJoiner;
 
 public class IndexingTools {
-    private RestTemplate restTemplate;
     private String indexName;
     private String analyzerName;
     private String type;
     private List<String> fields = new ArrayList<>();
-    private UrlBuilder urlBuilder = new UrlBuilder();
+    private Client client;
 
-    public IndexingTools(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public IndexingTools() {
     }
 
 
-    public void deleteIndexIfExists() throws URISyntaxException {
-        restTemplate.delete(urlBuilder.urlForIndex(indexName));
+    public void deleteIndexIfExists(){
+        DeleteIndexRequest dr = new DeleteIndexRequest();
+        dr.indices(indexName);
+        ActionFuture<DeleteIndexResponse> res = client.admin().indices().delete(dr);
+        res.actionGet(2000);
     }
 
     private void validateFields() {
-        Assert.noNullElements(new Object[]{restTemplate, indexName, analyzerName, type}, "IndexingTools has null value!");
+        Assert.noNullElements(new Object[]{client, indexName, analyzerName, type}, "IndexingTools has null value!");
         Assert.notEmpty(fields, "Index fields cannot be empty.");
     }
 
+    public IndexingTools setClient(Client client) {
+        this.client = client;
+        return this;
+    }
 
     public IndexingTools setIndexName(String indexName) {
         this.indexName = indexName;
@@ -66,15 +74,13 @@ public class IndexingTools {
         return this;
     }
 
-    public String indexWithEdge_ngramFilter(Client client) throws IOException {
+    public String indexWithEdge_ngramAnalyzer() throws IOException {
         validateFields();
         CreateIndexRequest cir = new CreateIndexRequest();
         cir.index(indexName);
         cir.source(source());
         ActionFuture<CreateIndexResponse> res = client.admin().indices().create(cir);
-        CreateIndexResponse response = res.actionGet(5000);
-        System.out.println("INDEX : " + response.index());
-        System.out.println("INDEX isShardsAcked : " + response.isShardsAcked());
+        res.actionGet(5000);
         return source().string();
 
     }

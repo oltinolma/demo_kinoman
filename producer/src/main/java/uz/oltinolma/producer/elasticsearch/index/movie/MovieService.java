@@ -3,7 +3,6 @@ package uz.oltinolma.producer.elasticsearch.index.movie;
 import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import uz.oltinolma.producer.elasticsearch.index.tools.IndexingTools;
 
 import java.util.List;
@@ -14,8 +13,6 @@ public class MovieService {
     private MoviePgRepository postgres;
     @Autowired
     private MovieElasticsearchRepository elasticsearch;
-    @Autowired
-    private RestTemplate restTemplate;
     @Autowired
     private Client client;
 
@@ -38,13 +35,15 @@ public class MovieService {
 
     private void prepareIndex() {
         try {
-            IndexingTools indexingTools = new IndexingTools(restTemplate).setAnalyzerName("autocomplete")
+            IndexingTools indexingTools = new IndexingTools()
+                    .setClient(client)
+                    .setAnalyzerName("autocomplete")
                     .setIndexName("movie_index")
                     .setType("movie")
                     .addField("name")
                     .addField("full_name");
             indexingTools.deleteIndexIfExists();
-            indexingTools.indexWithEdge_ngramFilter(client);
+            indexingTools.indexWithEdge_ngramAnalyzer();
         } catch (Exception e) {
             e.printStackTrace();
         }
