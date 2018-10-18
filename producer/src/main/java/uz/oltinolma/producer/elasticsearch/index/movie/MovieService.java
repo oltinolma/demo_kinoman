@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.oltinolma.producer.elasticsearch.index.tools.IndexingTools;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -25,27 +26,29 @@ public class MovieService {
     }
 
     public void indexAll() {
-        prepareIndex();
-        elasticsearch.saveAll(getAllMerchantsFromPg());
+        try {
+            prepareIndex();
+            elasticsearch.saveAll(getAllMerchantsFromPg());
+        } catch (Exception e) {
+            //TODO react to exception
+            e.printStackTrace();
+        }
     }
 
     public List<Movie> getAllMerchantsFromPg() {
         return postgres.getAllMovies();
     }
 
-    private void prepareIndex() {
-        try {
-            IndexingTools indexingTools = new IndexingTools()
-                    .setClient(client)
-                    .setAnalyzerName("autocomplete")
-                    .setIndexName("movie_index")
-                    .setType("movie")
-                    .addField("name")
-                    .addField("full_name");
-            indexingTools.deleteIndexIfExists();
-            indexingTools.indexWithEdge_ngramAnalyzer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void prepareIndex() throws IOException {
+        IndexingTools indexingTools = new IndexingTools.Builder(client)
+                .setAnalyzerName("autocomplete")
+                .setIndexName("movie_index")
+                .setType("movie")
+                .addField("name")
+                .addField("full_name")
+                .build();
+
+        indexingTools.deleteIndexIfExists();
+        indexingTools.createIndexWithEdge_ngramAnalyzer();
     }
 }

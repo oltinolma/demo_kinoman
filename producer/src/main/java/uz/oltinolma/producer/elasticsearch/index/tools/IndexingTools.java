@@ -5,88 +5,40 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.Setting;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.analysis.Analysis;
-import org.elasticsearch.index.mapper.Mapping;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 public class IndexingTools {
     private String indexName;
     private String analyzerName;
     private String type;
-    private List<String> fields = new ArrayList<>();
+    private List<String> fields;
     private Client client;
 
-    public IndexingTools() {
-    }
+    private IndexingTools() {}
 
-
-    public void deleteIndexIfExists(){
+    public void deleteIndexIfExists() {
         DeleteIndexRequest dr = new DeleteIndexRequest();
         dr.indices(indexName);
         ActionFuture<DeleteIndexResponse> res = client.admin().indices().delete(dr);
         res.actionGet(2000);
     }
 
-    private void validateFields() {
-        Assert.noNullElements(new Object[]{client, indexName, analyzerName, type}, "IndexingTools has null value!");
-        Assert.notEmpty(fields, "Index fields cannot be empty.");
-    }
-
-    public IndexingTools setClient(Client client) {
-        this.client = client;
-        return this;
-    }
-
-    public IndexingTools setIndexName(String indexName) {
-        this.indexName = indexName;
-        return this;
-    }
-
-    public IndexingTools setAnalyzerName(String analyzerName) {
-        this.analyzerName = analyzerName;
-        return this;
-    }
-
-
-    public IndexingTools setType(String type) {
-        this.type = type;
-        return this;
-    }
-
-
-    public IndexingTools addField(String field) {
-        if (field != null && !field.isEmpty())
-            this.fields.add(field);
-        return this;
-    }
-
-    public String indexWithEdge_ngramAnalyzer() throws IOException {
-        validateFields();
+    public void createIndexWithEdge_ngramAnalyzer() throws IOException {
         CreateIndexRequest cir = new CreateIndexRequest();
         cir.index(indexName);
         cir.source(source());
         ActionFuture<CreateIndexResponse> res = client.admin().indices().create(cir);
         res.actionGet(5000);
-        return source().string();
-
     }
 
-
-    public XContentBuilder source() throws IOException {
+    private XContentBuilder source() throws IOException {
         String filterName = analyzerName + "_filter";
         XContentBuilder builder = XContentFactory.jsonBuilder();
         builder.startObject();
@@ -148,6 +100,56 @@ public class IndexingTools {
         builder.endObject();
 
         return builder;
+    }
+
+    public static class Builder {
+        private String indexName;
+        private String analyzerName;
+        private String type;
+        private List<String> fields = new ArrayList<>();
+        private Client client;
+
+        public Builder(Client client) {
+            this.client = client;
+        }
+
+        public IndexingTools build() {
+            validateFields();
+            IndexingTools it = new IndexingTools();
+            it.client = this.client;
+            it.indexName = this.indexName;
+            it.fields = this.fields;
+            it.analyzerName = this.analyzerName;
+            it.type = this.type;
+
+            return it;
+        }
+
+        private void validateFields() {
+            Assert.noNullElements(new Object[]{client, indexName, analyzerName, type}, "IndexingTools has null value!");
+            Assert.notEmpty(fields, "Index fields cannot be empty.");
+        }
+
+        public IndexingTools.Builder addField(String field) {
+            if (field != null && !field.isEmpty())
+                this.fields.add(field);
+            return this;
+        }
+
+        public Builder setIndexName(String indexName) {
+            this.indexName = indexName;
+            return this;
+        }
+
+        public Builder setAnalyzerName(String analyzerName) {
+            this.analyzerName = analyzerName;
+            return this;
+        }
+
+        public Builder setType(String type) {
+            this.type = type;
+            return this;
+        }
     }
 }
 
