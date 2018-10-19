@@ -1,10 +1,11 @@
 package uz.oltinolma.producer.elasticsearch.index.taxonomy;
 
+import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import uz.oltinolma.producer.elasticsearch.index.tools.IndexingTools;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -14,7 +15,7 @@ public class TaxonomyService {
     @Autowired
     private TaxonomyElasticsearchRepository elasticsearch;
     @Autowired
-    private RestTemplate restTemplate;
+    private Client client;
 
 
     public void index(Taxonomy taxonomy) {
@@ -26,25 +27,27 @@ public class TaxonomyService {
     }
 
     public void indexAll() {
-        prepareIndex();
-        elasticsearch.saveAll(getAllTaxonomiesFromPg());
+        try {
+            prepareIndex();
+            elasticsearch.saveAll(getAllTaxonomiesFromPg());
+        } catch (IOException e) {
+            e.printStackTrace();
+            //TODO react
+        }
     }
 
     public List<Taxonomy> getAllTaxonomiesFromPg() {
         return postgres.getAllTaxonomies();
     }
 
-    private void prepareIndex(){
-        try {
-            IndexingTools indexingTools = new IndexingTools(restTemplate).setAnalyzerName("autocomplete")
-                    .setIndexName("taxonomy_index")
-                    .setType("taxonomy")
-                    .addField("name");
-            indexingTools.deleteIndexIfExists();
-            indexingTools.createIndex();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    private void prepareIndex() throws IOException {
+        IndexingTools indexingTools = new IndexingTools.Builder(client)
+                .setAnalyzerName("autocomplete")
+                .setIndexName("taxonomy_index")
+                .setType("taxonomy")
+                .addField("name")
+                .build();
+        indexingTools.deleteIndexIfExists();
+        indexingTools.createIndexWithEdge_ngramAnalyzer();
     }
 }
