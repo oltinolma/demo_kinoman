@@ -14,13 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uz.oltinolma.producer.config.SecurityTestConfig;
-import uz.oltinolma.producer.security.config.InitAll;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
-import uz.oltinolma.producer.security.token.JwtTokenFactory;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,34 +26,35 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uz.oltinolma.producer.security.UserDummies.sampleUser;
-import static uz.oltinolma.producer.security.UserDummies.userContextForGuest;
+import static uz.oltinolma.producer.security.UserDummies.authorizedUser;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = SecurityTestConfig.class)
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PermissionTest {
+public class SecurityPermissionsTest {
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean(name = "userServiceH2Impl")
     private UserService userService;
+
     @MockBean(name = "permissionServiceH2Impl")
     private PermissionService permissionService;
-    @MockBean
-    private InitAll initAll;
 
     @Autowired
-    private JwtTokenFactory tokenFactory;
+    private SecurityTestConfig.TokenHelper
+            tokenHelper;
 
     @BeforeEach
     public void setup() {
         Set<String> permissions = new HashSet<String>();
         permissions.add("permission_1");
         permissions.add("permission_2");
-        given(userService.findByLogin(sampleUser().getLogin())).willReturn(sampleUser());
-        given(permissionService.getByLogin(sampleUser().getLogin())).willReturn(permissions);
+        given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissions);
+        given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
+        tokenHelper.setUserService(userService);
     }
 
     @Test
@@ -79,7 +76,6 @@ public class PermissionTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "wrong_token");
         headers.set("Content-Type", "application/json");
-        headers.set("user-agent", "someAgent");
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("message").value("Invalid access token."))
@@ -94,9 +90,8 @@ public class PermissionTest {
     @DisplayName("400 when Routing-Key header is missing.")
     public void whenRoutingHeaderIsMIssing400() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Authorization", "Bearer " + normalToken());
+        headers.set("X-Authorization", "Bearer " + tokenHelper.normalTokenForAdmin());
         headers.set("Content-Type", "application/json");
-        headers.set("user-agent", "someAgent");
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andDo(print())
                 .andExpect(status().is(400));
@@ -106,10 +101,9 @@ public class PermissionTest {
     @DisplayName("Unauthorized when token is expired.")
     public void whenTokenExpired401() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Authorization", "Bearer " + expiredToken());
+        headers.set("X-Authorization", "Bearer " + tokenHelper.expiredToken());
         headers.set("Content-Type", "application/json");
         headers.set("Routing-Key", "someRoutingKey");
-        headers.set("user-agent", "someAgent");
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andDo(print())
                 .andExpect(status().is(401))
@@ -120,23 +114,13 @@ public class PermissionTest {
     @DisplayName("Authorized when has permission.")
     public void authorizedWhenHasPermission() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Authorization", "Bearer " + normalToken());
+        headers.set("X-Authorization", "Bearer " + tokenHelper.normalTokenForAdmin());
         headers.set("Content-Type", "application/json");
         headers.set("Routing-Key", "permission_1");
-        headers.set("user-agent", "someAgent");
 
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andExpect(status().is(404));
         mockMvc.perform(get("/hello").headers(headers))
                 .andExpect(status().isOk());
-    }
-
-
-    public String expiredToken() {
-        return tokenFactory.createAccessJwtToken(userContextForGuest(), Date.valueOf(LocalDate.ofYearDay(1999, 1)), Date.valueOf(LocalDate.ofYearDay(1999, 2))).getToken();
-    }
-
-    public String normalToken() {
-        return tokenFactory.createAccessJwtToken(userContextForGuest()).getToken();
     }
 }

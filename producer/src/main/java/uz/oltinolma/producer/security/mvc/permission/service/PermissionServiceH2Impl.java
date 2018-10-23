@@ -3,7 +3,7 @@ package uz.oltinolma.producer.security.mvc.permission.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
-import uz.oltinolma.producer.security.mvc.permission.Permissions;
+import uz.oltinolma.producer.security.mvc.permission.Permission;
 import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDao;
 
 @Service
@@ -19,11 +19,11 @@ public class PermissionServiceH2Impl extends PermissionService {
         this.permissionDao = permissionDaoH2Impl;
     }
 
-    public void insert(Permissions permissions) {
+    public void insert(Permission permissions) {
         permissionDao.insert(permissions);
     }
 
-    public BaseResponse update(Permissions permissions) {
+    public BaseResponse update(Permission permissions) {
         return permissionDao.update(permissions);
     }
 

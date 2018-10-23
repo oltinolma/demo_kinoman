@@ -44,7 +44,8 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
     }
 
     private boolean isFromMobileDevice(HttpServletRequest request) {
-        return request.getHeader("user-agent").contains("okhttp");
+        String userAgent = request.getHeader("user-agent");
+        return userAgent != null && userAgent.contains("okhttp");
     }
 
     @Override

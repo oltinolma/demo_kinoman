@@ -2,7 +2,7 @@ package uz.oltinolma.producer.security.mvc.permission.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
-import uz.oltinolma.producer.security.mvc.permission.Permissions;
+import uz.oltinolma.producer.security.mvc.permission.Permission;
 import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDao;
 
 import java.util.List;
@@ -15,22 +15,22 @@ public abstract class PermissionService {
         return getPermissionDao().getByLogin(login);
     }
 
-    public List<Permissions> list() {
+    public List<Permission> list() {
         return getPermissionDao().list();
     }
 
-    public Permissions get(int id) {
+    public Permission get(int id) {
         return getPermissionDao().get(id);
     }
 
-    public abstract void insert(Permissions permissions);
+    public abstract void insert(Permission permissions);
 
     @Transactional
-    public BaseResponse insertAll(List<Permissions> roles) {
+    public BaseResponse insertAll(List<Permission> roles) {
         return getPermissionDao().insertAll(roles);
     }
 
-    public abstract BaseResponse update(Permissions permissions);
+    public abstract BaseResponse update(Permission permissions);
 
     public abstract BaseResponse delete(int id);
 }

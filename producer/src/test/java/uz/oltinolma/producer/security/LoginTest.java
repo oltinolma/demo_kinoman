@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uz.oltinolma.producer.config.SecurityTestConfig;
-import uz.oltinolma.producer.security.config.InitAll;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 
 import static org.mockito.BDDMockito.given;
@@ -23,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uz.oltinolma.producer.security.UserDummies.sampleUser;
+import static uz.oltinolma.producer.security.UserDummies.authorizedUser;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = SecurityTestConfig.class)
@@ -33,15 +32,13 @@ import static uz.oltinolma.producer.security.UserDummies.sampleUser;
 public class LoginTest {
     @MockBean(name = "userServiceH2Impl")
     private UserService userService;
-    @MockBean
-    private InitAll initAll;
 
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
     public void setup(){
-        given(userService.findByLogin(sampleUser().getLogin())).willReturn(sampleUser());
+        given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
     }
 
 

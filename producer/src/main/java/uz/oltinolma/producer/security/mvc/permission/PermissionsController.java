@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@Api(value = "demo_kinoman", description = "Ruxsatlar bilan bog'liq operatsiyalar")
+@Api(value = "demo_kinoman", description = "Operations on permissions")
 @RequestMapping(value = "/permissions")
 public class PermissionsController {
     @Autowired
@@ -27,23 +27,23 @@ public class PermissionsController {
     private BaseResponses baseResponses;
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
-    @ApiOperation(value = "Ruxsatlar ro'yxatini olish", response = Permissions.class, responseContainer = "List")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @ApiOperation(value = "Get list of all permissions", response = Permission.class, responseContainer = "List")
+    @GetMapping(value = "/list", produces = "application/json")
     public List getList() {
         return permissionServiceH2Impl.list();
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
-    @ApiOperation(value = "Ma'lum loginga tegishli ruxsatlar ro'yxatini olish", response = Permissions.class, responseContainer = "List")
-    @RequestMapping(value = "/listByLogin", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @ApiOperation(value = "List of permission names for a particular user.", response = Permission.class, responseContainer = "List")
+    @GetMapping(value = "/list/for/current/user", produces = "application/json")
     public Set<String> getListByLogin() {
         return permissionServiceH2Impl.getByLogin(getLogin());
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.update')")
-    @ApiOperation(value = "Ma'lum ID lik ruxsatni olish", response = Permissions.class)
+    @ApiOperation(value = "Ma'lum ID lik ruxsatni olish", response = Permission.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
-    public Permissions get(@PathVariable int id) {
+    public Permission get(@PathVariable int id) {
         return permissionServiceH2Impl.get(id);
     }
 
@@ -51,14 +51,14 @@ public class PermissionsController {
     @PreAuthorize("@SecurityPermission.hasPermission('permission.update')")
     @ApiOperation(value = "Ma'lum ID lik ruxsatni tahrirlash", response = BaseResponse.class)
     @RequestMapping(method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
-    public BaseResponse update(@Validated @RequestBody Permissions permissions) {
+    public BaseResponse update(@Validated @RequestBody Permission permissions) {
         return permissionServicePostgresImpl.update(permissions);
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.insert')")
-    @ApiOperation(value = "Yangi ruxsat kiritish", response = Permissions.class)
+    @ApiOperation(value = "Yangi ruxsat kiritish", response = Permission.class)
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public BaseResponse insert(@Validated @RequestBody Permissions permissions) {
+    public BaseResponse insert(@Validated @RequestBody Permission permissions) {
         permissionServicePostgresImpl.insert(permissions);
         return baseResponses.successMessage();
     }
