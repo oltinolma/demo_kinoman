@@ -45,10 +45,10 @@ class PermissionsControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
-
     @Nested
     @DisplayName("when authorized")
     class WhenAuthorized {
+        private String tokenForAdmin;
         Set<String> permissionNames;
 
         WhenAuthorized() {
@@ -56,26 +56,18 @@ class PermissionsControllerTest {
             permissionNames = new HashSet<String>();
             permissionNames.add("permission.list");
             permissionNames.add("permission.update");
-        }
-
-
-        @BeforeEach
-        void setup() {
-            given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissionNames);
-            given(permissionService.list()).willReturn(permissionDummies.getAll());
             given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
             tokenHelper.setUserService(userService);
+            tokenForAdmin = "Bearer " + tokenHelper.normalTokenForAdmin();
+            given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissionNames);
+            given(permissionService.list()).willReturn(permissionDummies.getAll());
         }
 
-        @Test
-        @DisplayName("/permissions/list returns all permissions")
-        void getList_MustReturnAllPermissions() throws Exception {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-Authorization", "Bearer " + tokenHelper.normalTokenForAdmin());
-            headers.set("Content-Type", "application/json");
-            headers.set("Routing-Key", "permission.list");
 
-            mockMvc.perform(get("/permissions/list").headers(headers))
+        @Test
+        @DisplayName("getList() returns all permissions")
+        void getList_MustReturnAllPermissions() throws Exception {
+            mockMvc.perform(get("/permissions/list").headers(headers()))
                     .andDo(print())
                     .andExpect(status().is(200))
                     .andExpect(content().json(mapper.writeValueAsString(permissionDummies.getAll())));
@@ -84,39 +76,37 @@ class PermissionsControllerTest {
         @Test
         @DisplayName("getListByLogin returns permission names for current user")
         void getListByLogin_MustReturnPermissionNamesForCurrentUser() throws Exception {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-Authorization", "Bearer " + tokenHelper.normalTokenForAdmin());
-            headers.set("Content-Type", "application/json");
-            headers.set("Routing-Key", "permission.list");
-
-            mockMvc.perform(get("/permissions/list/for/current/user").headers(headers))
+            mockMvc.perform(get("/permissions/list/for/current/user").headers(headers()))
                     .andDo(print())
                     .andExpect(status().is(200))
                     .andExpect(content().json(mapper.writeValueAsString(permissionNames)));
 
+        }
+
+        private HttpHeaders headers() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", tokenForAdmin);
+            headers.set("Content-Type", "application/json");
+            return headers;
         }
     }
 
     @Nested
     @DisplayName("when unauthorized")
     class WhenUnauthorized {
-        private String TOKEN_FOR_GUEST;
-        @BeforeEach
-        void setup() {
+        private String tokenForGuest;
+
+        WhenUnauthorized() {
             given(userService.findByLogin(guestUser().getLogin())).willReturn(guestUser());
             tokenHelper.setUserService(userService);
-            TOKEN_FOR_GUEST = "Bearer " + tokenHelper.normalTokenForGuest();
+            tokenForGuest = "Bearer " + tokenHelper.normalTokenForGuest();
         }
+
 
         @Test
         @DisplayName("getList 403")
         void getList() throws Exception {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-Authorization", TOKEN_FOR_GUEST);
-            headers.set("Content-Type", "application/json");
-            headers.set("Routing-Key", "permission.list");
-
-            mockMvc.perform(get("/permissions/list").headers(headers))
+            mockMvc.perform(get("/permissions/list").headers(headers()))
                     .andDo(print())
                     .andExpect(status().isForbidden());
         }
@@ -124,15 +114,16 @@ class PermissionsControllerTest {
         @Test
         @DisplayName("getListByLogin 403")
         void getListByLogin_MustReturnPermissionNamesForCurrentUser() throws Exception {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-Authorization", TOKEN_FOR_GUEST);
-            headers.set("Content-Type", "application/json");
-            headers.set("Routing-Key", "permission.list");
-
-            mockMvc.perform(get("/permissions/list/for/current/user").headers(headers))
+            mockMvc.perform(get("/permissions/list/for/current/user").headers(headers()))
                     .andDo(print())
                     .andExpect(status().isForbidden());
+        }
 
+        private HttpHeaders headers() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", tokenForGuest);
+            headers.set("Content-Type", "application/json");
+            return headers;
         }
     }
 }
