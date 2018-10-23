@@ -8,57 +8,42 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.oltinolma.producer.security.common.BaseResponses;
-import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
-import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDaoH2Impl;
-import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.model.UserContext;
+import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
+import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 
 import java.util.List;
 import java.util.Set;
 
 @RestController
-//@PreAuthorize("@SecurityPermission.hasPermission('permission')")
-@Api(value = "x-market", description = "Ruxsatlar bilan bog'liq operatsiyalar")
+@Api(value = "demo_kinoman", description = "Operations on permissions")
 @RequestMapping(value = "/permissions")
 public class PermissionsController {
     @Autowired
     private PermissionService permissionServicePostgresImpl;
     @Autowired
     private PermissionService permissionServiceH2Impl;
-
-    @Autowired
-    private PermissionDaoH2Impl permissionDaoH2;
     @Autowired
     private BaseResponses baseResponses;
 
-//    @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
-    @RequestMapping(value = "/mine", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
-    public UIPermissionResponse mine() {
-        UIPermissionResponse response = new UIPermissionResponse();
-        response.setMenus(permissionDaoH2.listByLoginPermissionWithTopic(getLogin(), "menu."));
-        response.setActions(permissionDaoH2.listByLoginPermissionWithTopic(getLogin(), "action."));
-        return response;
-    }
-
-
     @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
-    @ApiOperation(value = "Ruxsatlar ro'yxatini olish", response = Permissions.class, responseContainer = "List")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @ApiOperation(value = "Get list of all permissions", response = Permission.class, responseContainer = "List")
+    @GetMapping(value = "/list", produces = "application/json")
     public List getList() {
         return permissionServiceH2Impl.list();
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
-    @ApiOperation(value = "Ma'lum loginga tegishli ruxsatlar ro'yxatini olish", response = Permissions.class, responseContainer = "List")
-    @RequestMapping(value = "/listByLogin", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @ApiOperation(value = "List of permission names for a particular user.", response = Permission.class, responseContainer = "List")
+    @GetMapping(value = "/list/for/current/user", produces = "application/json")
     public Set<String> getListByLogin() {
         return permissionServiceH2Impl.getByLogin(getLogin());
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.update')")
-    @ApiOperation(value = "Ma'lum ID lik ruxsatni olish", response = Permissions.class)
+    @ApiOperation(value = "Ma'lum ID lik ruxsatni olish", response = Permission.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
-    public Permissions get(@PathVariable int id) {
+    public Permission get(@PathVariable int id) {
         return permissionServiceH2Impl.get(id);
     }
 
@@ -66,14 +51,14 @@ public class PermissionsController {
     @PreAuthorize("@SecurityPermission.hasPermission('permission.update')")
     @ApiOperation(value = "Ma'lum ID lik ruxsatni tahrirlash", response = BaseResponse.class)
     @RequestMapping(method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
-    public BaseResponse update(@Validated @RequestBody Permissions permissions) {
+    public BaseResponse update(@Validated @RequestBody Permission permissions) {
         return permissionServicePostgresImpl.update(permissions);
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.insert')")
-    @ApiOperation(value = "Yangi ruxsat kiritish", response = Permissions.class)
+    @ApiOperation(value = "Yangi ruxsat kiritish", response = Permission.class)
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public BaseResponse insert(@Validated @RequestBody Permissions permissions) {
+    public BaseResponse insert(@Validated @RequestBody Permission permissions) {
         permissionServicePostgresImpl.insert(permissions);
         return baseResponses.successMessage();
     }

@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import uz.oltinolma.producer.security.common.LogUtil;
-import uz.oltinolma.producer.security.mvc.permission.Permissions;
+import uz.oltinolma.producer.security.mvc.permission.Permission;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -29,7 +29,7 @@ public class PermissionDaoPostgresImpl extends PermissionDao {
     /**
      * @return int generated id for the record
      */
-    public int insert(Permissions permissions) {
+    public int insert(Permission permissions) {
         Map<String, Object> map = new HashMap<>();
         map.put("name", permissions.getName());
         map.put("notes", permissions.getInfo());

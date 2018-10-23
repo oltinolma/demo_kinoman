@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/temp/search/for")
+@RequestMapping("/search/for")
 public class SearchController {
     @Autowired
     private UniversalSearchHelper universalSearchQueries;

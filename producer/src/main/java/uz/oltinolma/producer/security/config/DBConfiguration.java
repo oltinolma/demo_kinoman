@@ -64,5 +64,4 @@ public class DBConfiguration {
         return new DataSourceTransactionManager(h2Datasource);
     }
 
-
 }
