@@ -39,6 +39,7 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
         if (isFromMobileDevice(request)) {
             token.setFromMobileDevice(true);
         }
+        System.err.println(getAuthenticationManager().getClass());
         return getAuthenticationManager().authenticate(new JwtAuthenticationToken(token));
     }
 

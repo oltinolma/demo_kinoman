@@ -8,38 +8,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.oltinolma.producer.security.common.BaseResponses;
-import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
-import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDaoH2Impl;
-import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.model.UserContext;
+import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
+import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 
 import java.util.List;
 import java.util.Set;
 
 @RestController
-//@PreAuthorize("@SecurityPermission.hasPermission('permission')")
-@Api(value = "x-market", description = "Ruxsatlar bilan bog'liq operatsiyalar")
+@Api(value = "demo_kinoman", description = "Ruxsatlar bilan bog'liq operatsiyalar")
 @RequestMapping(value = "/permissions")
 public class PermissionsController {
     @Autowired
     private PermissionService permissionServicePostgresImpl;
     @Autowired
     private PermissionService permissionServiceH2Impl;
-
-    @Autowired
-    private PermissionDaoH2Impl permissionDaoH2;
     @Autowired
     private BaseResponses baseResponses;
-
-//    @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
-    @RequestMapping(value = "/mine", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
-    public UIPermissionResponse mine() {
-        UIPermissionResponse response = new UIPermissionResponse();
-        response.setMenus(permissionDaoH2.listByLoginPermissionWithTopic(getLogin(), "menu."));
-        response.setActions(permissionDaoH2.listByLoginPermissionWithTopic(getLogin(), "action."));
-        return response;
-    }
-
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
     @ApiOperation(value = "Ruxsatlar ro'yxatini olish", response = Permissions.class, responseContainer = "List")

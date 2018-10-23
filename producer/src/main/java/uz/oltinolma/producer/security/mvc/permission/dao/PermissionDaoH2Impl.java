@@ -59,18 +59,4 @@ public class PermissionDaoH2Impl extends PermissionDao {
 
         return this.getTemplate().update(sql, map);
     }
-
-    public List<Permissions> listByLoginPermissionWithTopic(String login, String topic) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("login", login);
-        String sql = "select * from view_permission_login where permission_name like '%" + topic + "%' and login=:login";
-        //TODO cant execute parametred query need to fix
-        return template.query(sql, map, (resultSet, i) -> {
-            Permissions permissions = new Permissions();
-            permissions.setId(resultSet.getInt("permission_id"));
-            permissions.setName(resultSet.getString("permission_name"));
-            permissions.setInfo(resultSet.getString("permission_notes"));
-            return permissions;
-        });
-    }
 }

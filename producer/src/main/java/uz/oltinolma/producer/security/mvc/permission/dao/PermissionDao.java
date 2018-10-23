@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 import java.util.*;
 
 public abstract class PermissionDao {
+    private static int counter;
     private static final Logger logger = LogUtil.getInstance();
     @Autowired
     private PermissionsExtractor extractor;
@@ -27,8 +28,13 @@ public abstract class PermissionDao {
     public abstract NamedParameterJdbcTemplate getTemplate();
 
     public Set<String> getByLogin(String login) {
+        System.out.println("GET_BY_LOGIN " + ++counter);
         SqlParameterSource parameterSource = new MapSqlParameterSource("login", login);
         String sql = "select permission_name from view_permission_login where login=:login";
+        sql = "SELECT p.name AS permission_name FROM permission p \n" +
+                "WHERE p.id IN (SELECT rp.id_permission FROM role_permission rp \n" +
+                "WHERE rp.id_role = (SELECT u.id_role FROM users u \n" +
+                "WHERE u.login = :login))";
         return new LinkedHashSet<String>(getTemplate().query(sql, parameterSource, (resultSet, rowNum) -> resultSet.getString("permission_name")));
     }
 

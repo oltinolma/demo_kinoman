@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.CorsFilter;
 import uz.oltinolma.producer.security.RestAuthenticationEntryPoint;
 import uz.oltinolma.producer.security.auth.ajax.AjaxAuthenticationProvider;
 import uz.oltinolma.producer.security.auth.ajax.AjaxLoginProcessingFilter;
@@ -31,6 +33,7 @@ import uz.oltinolma.producer.security.auth.jwt.JwtTokenAuthenticationProcessingF
 import uz.oltinolma.producer.security.auth.jwt.SkipPathRequestMatcher;
 import uz.oltinolma.producer.security.auth.jwt.extractor.TokenExtractor;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
@@ -70,8 +73,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://uos.uz", "*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setMaxAge(3600L);
+        configuration.addAllowedHeader("testHeader");
+//        configuration.setExposedHeaders(Arrays.asList("X-Authorization", "Content-Type", "Accept", "X-Requested-With"));
+//        configuration.setAllowedHeaders(Arrays.asList("X-Authorization", "Content-Type", "Accept", "X-Requested-With"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -106,6 +113,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(ajaxAuthenticationProvider);
@@ -123,7 +131,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setEncoding("utf-8");
         filter.setForceEncoding(true);
         http.addFilterBefore(filter, CsrfFilter.class);
-
         http.addFilterBefore(new WebSecurityCorsFilter(), ChannelProcessingFilter.class);
         http
                 .csrf().disable()
@@ -137,8 +144,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(FORM_BASED_LOGIN_ENTRY_POINT).permitAll()
                 .antMatchers(TOKEN_REFRESH_ENTRY_POINT).permitAll()
                 .antMatchers(SEARCH_BASED_ENTRY_POINT).permitAll()
-                .and()
-                .authorizeRequests()
                 .antMatchers(TOKEN_BASED_AUTH_ENTRY_POINT).authenticated()
                 .and()
                 .addFilterBefore(buildAjaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
