@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("@SecurityPermission.hasPermission('role_permission')")
-@Api(value = "x-market", description = "Huqularga mos ruhsatlar bilan bog'liq operatsiyalar")
+@Api(value = "demo_kinoman", description = "Huqularga mos ruhsatlar bilan bog'liq operatsiyalar")
 @RequestMapping(value = "/rolesPermissions")
 public class RolesPermissionsController {
     @Autowired
@@ -25,36 +25,36 @@ public class RolesPermissionsController {
     @Autowired
     private BaseResponses baseResponses;
 
-    @PreAuthorize("@SecurityPermission.hasPermission('role_permission.list')")
+    @PreAuthorize("@SecurityPermission.hasPermission('rp.info')")
     @ApiOperation(value = "Huquqlarga mos ruhsatlar ro'yxatini olish", response = RolesPermissions.class, responseContainer = "List")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/list", produces = "application/json")
     public List getList() {
         return rolesPermissionsServiceH2Impl.list();
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('role_permission.list')")
+    @PreAuthorize("@SecurityPermission.hasPermission('rp.info')")
     @ApiOperation(value = "Huquqlarga mos ruhsatlar juftligini, ruhsatlar sonini ro'yxatini olish", response = Role.class, responseContainer = "List")
-    @RequestMapping(value = "/count_list", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/count_list", produces = "application/json")
     public List getCountList() {
         return rolesPermissionsServiceH2Impl.countList();
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('role_permission.update')")
+    @PreAuthorize("@SecurityPermission.hasPermission('rp.info')")
     @ApiOperation(value = "Ma'lum ID lik huquqga mos ruhsatni olish", response = RolesPermissions.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/{id}",consumes = "application/json", produces = "application/json")
     public RolesPermissions get(@PathVariable int id) {
         return rolesPermissionsServiceH2Impl.get(id);
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('role_permission.update')")
+    @PreAuthorize("@SecurityPermission.hasPermission('rp.update')")
     @ApiOperation(value = "Ma'lum ID lik huquqga mos ruhsatni tahrirlash", response = BaseResponse.class)
-    @RequestMapping(method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @PutMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse update(@Validated @RequestBody RolesPermissions RolesPermissions) {
         return rolesPermissionsServicePostgresImpl.update(RolesPermissions);
     }
 
 
-    @PreAuthorize("@SecurityPermission.hasPermission('role_permission.insert')")
+    @PreAuthorize("@SecurityPermission.hasPermission('rp.insert')")
     @ApiOperation(value = "Yangi huquqga mos ruhsat kiritish", response = BaseResponse.class)
     @PostMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse insert(@Validated @RequestBody RolesPermissions rolesPermissions) {
@@ -62,9 +62,9 @@ public class RolesPermissionsController {
         return baseResponses.successMessage();
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('role_permission.delete')")
+    @PreAuthorize("@SecurityPermission.hasPermission('rp.delete')")
     @ApiOperation(value = "Ma'lum ID lik huquqga mos ruhsatni o'chirish", response = BaseResponse.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public BaseResponse delete(@PathVariable("id") int id) {
         return rolesPermissionsServicePostgresImpl.delete(id);
     }

@@ -16,9 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@PreAuthorize("@SecurityPermission.hasPermission('employee')")
 @RequestMapping(value = "/employee")
-@Api(value = "x-market", description = "Foydalanuvchilar bilan bog'liq operatsiyalar")
+@Api(value = "demo_kinoman", description = "Foydalanuvchilar bilan bog'liq operatsiyalar")
 public class UserController {
     @Autowired
     @Qualifier("userServiceH2Impl")
@@ -26,43 +25,44 @@ public class UserController {
     @Autowired
     private UserService userServicePostgresImpl;
 
+    @PreAuthorize("@SecurityPermission.hasPermission('user.info')")
     @ApiOperation(value = "Login orqali foydalanuvchi ma'lumotlarini olish", response = User.class, responseContainer = "List")
-    @RequestMapping(value = "/getEmployeeInfoByLogin", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/getEmployeeInfoByLogin", produces = "application/json")
     public List list() {
         return userService.getEmployeeInfoByLogin(getLogin());
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('employee.list')")
+    @PreAuthorize("@SecurityPermission.hasPermission('user.info')")
     @ApiOperation(value = "Mavjud foydalanuvchilar ro'yxatini ko'rish", response = User.class, responseContainer = "List")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/list", produces = "application/json")
     public List getList() {
         return userService.list();
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('employee.update')")
+    @PreAuthorize("@SecurityPermission.hasPermission('user.update')")
     @ApiOperation(value = "ID orqali foydalanuvchini olish", response = User.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public User get(@PathVariable UUID id) {
         return userService.get(id);
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('employee.update')")
+    @PreAuthorize("@SecurityPermission.hasPermission('user.update')")
     @ApiOperation(value = "Foydalanuvchini tahrirlash", response = BaseResponse.class)
-    @RequestMapping(method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @PutMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse update(@Validated @RequestBody User employee) {
         return userServicePostgresImpl.update(employee);
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('employee.insert')")
+    @PreAuthorize("@SecurityPermission.hasPermission('user.insert')")
     @ApiOperation(value = "Foydalanuvchi qo'shish", response = BaseResponse.class)
-    @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse insert(@Validated @RequestBody User employee) {
         return userServicePostgresImpl.insert(employee);
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('employee.delete')")
+    @PreAuthorize("@SecurityPermission.hasPermission('user.delete')")
     @ApiOperation(value = "Foydalanuvchini o'chirish", response = BaseResponse.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public BaseResponse delete(@PathVariable("id") int id) {
         return userServicePostgresImpl.delete(id);
     }
