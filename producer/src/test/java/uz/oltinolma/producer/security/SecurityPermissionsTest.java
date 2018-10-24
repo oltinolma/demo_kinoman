@@ -47,6 +47,7 @@ public class SecurityPermissionsTest {
     private SecurityTestConfig.TokenHelper
             tokenHelper;
 
+
     @BeforeEach
     public void setup() {
         Set<String> permissions = new HashSet<String>();
@@ -87,12 +88,15 @@ public class SecurityPermissionsTest {
     }
 
     @Test
-    @DisplayName("400 when Routing-Key header is missing.")
-    public void whenRoutingHeaderIsMIssing400() throws Exception {
+    @DisplayName("400 when Routing-Key header is missing in the request to rabbitMQ.")
+    public void whenRoutingHeaderIsMissing400() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "Bearer " + tokenHelper.normalTokenForAdmin());
         headers.set("Content-Type", "application/json");
-        mockMvc.perform(post("/anyUrl").headers(headers))
+        mockMvc.perform(post("/v1/send").headers(headers))
+                .andDo(print())
+                .andExpect(status().is(400));
+        mockMvc.perform(post("/v1/request").headers(headers))
                 .andDo(print())
                 .andExpect(status().is(400));
     }
@@ -122,5 +126,12 @@ public class SecurityPermissionsTest {
                 .andExpect(status().is(404));
         mockMvc.perform(get("/hello").headers(headers))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("/search is accessible without authorization.")
+    public void searchIsNotSecured() throws Exception {
+        mockMvc.perform(get("/search/anyUrl"))
+                .andExpect(status().is(404));
     }
 }

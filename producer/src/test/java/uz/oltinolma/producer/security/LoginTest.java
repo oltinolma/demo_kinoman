@@ -37,19 +37,16 @@ public class LoginTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
     }
 
 
     @Test
     public void giveTokenWhenCorrectLoginAndPassword() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Requested-With", "XMLHttpRequest");
-        headers.set("Content-Type", "application/json");
         mockMvc.perform(post("/auth/login")
-                .headers(headers)
-                .content("{\"login\":\"user\",\"password\":\"correct_password\"}")
+                .headers(headers())
+                .content("{\"login\":\"admin\",\"password\":\"correct_password\"}")
         ).andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -58,21 +55,25 @@ public class LoginTest {
 
     @Test
     void whenWrongCredentials401() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Requested-With", "XMLHttpRequest");
-        headers.set("Content-Type", "application/json");
         mockMvc.perform(post("/auth/login")
-                .headers(headers)
+                .headers(headers())
                 .content("{\"login\":\"user\",\"password\":\"wrong_password\"}")
         ).andExpect(status().is(401))
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         mockMvc.perform(post("/auth/login")
-                .headers(headers)
+                .headers(headers())
                 .content("{\"login\":\"wrong_login\",\"password\":\"correct_password\"}")
         ).andExpect(status().isUnauthorized())
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private HttpHeaders headers() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Requested-With", "XMLHttpRequest");
+        headers.set("Content-Type", "application/json");
+        return headers;
     }
 }
