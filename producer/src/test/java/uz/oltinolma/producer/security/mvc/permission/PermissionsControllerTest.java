@@ -54,7 +54,7 @@ class PermissionsControllerTest {
         WhenAuthorized() {
             permissionDummies = new PermissionDummies();
             permissionNames = new HashSet<String>();
-            permissionNames.add("permission.list");
+            permissionNames.add("permission.info");
             permissionNames.add("permission.update");
             given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
             tokenHelper.setUserService(userService);

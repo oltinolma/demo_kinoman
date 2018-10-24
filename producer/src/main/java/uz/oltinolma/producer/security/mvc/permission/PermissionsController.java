@@ -26,21 +26,21 @@ public class PermissionsController {
     @Autowired
     private BaseResponses baseResponses;
 
-    @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
+    @PreAuthorize("@SecurityPermission.hasPermission('permission.info')")
     @ApiOperation(value = "Get list of all permissions", response = Permission.class, responseContainer = "List")
     @GetMapping(value = "/list", produces = "application/json")
     public List getList() {
         return permissionServiceH2Impl.list();
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('permission.list')")
+    @PreAuthorize("@SecurityPermission.hasPermission('permission.info')")
     @ApiOperation(value = "List of permission names for a particular user.", response = Permission.class, responseContainer = "List")
     @GetMapping(value = "/list/for/current/user", produces = "application/json")
     public Set<String> getListByLogin() {
         return permissionServiceH2Impl.getByLogin(getLogin());
     }
 
-    @PreAuthorize("@SecurityPermission.hasPermission('permission.update')")
+    @PreAuthorize("@SecurityPermission.hasPermission('permission.info')")
     @ApiOperation(value = "Ma'lum ID lik ruxsatni olish", response = Permission.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
     public Permission get(@PathVariable int id) {
