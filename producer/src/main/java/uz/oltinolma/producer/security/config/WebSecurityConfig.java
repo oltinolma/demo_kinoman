@@ -92,9 +92,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public FilterRegistrationBean registerCorsFilter(RTAuthenticationProcessingFilter filter) {
+    public FilterRegistrationBean registerRTFilter(RTAuthenticationProcessingFilter filter) {
         FilterRegistrationBean reg = new FilterRegistrationBean(filter);
-        reg.addUrlPatterns("/v1");
+        reg.addUrlPatterns("/v1/**");
         reg.setOrder(10);
         return reg;
     }
