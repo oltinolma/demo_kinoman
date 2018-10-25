@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -24,7 +23,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.filter.CorsFilter;
 import uz.oltinolma.producer.security.RestAuthenticationEntryPoint;
 import uz.oltinolma.producer.security.auth.ajax.AjaxAuthenticationProvider;
 import uz.oltinolma.producer.security.auth.ajax.AjaxLoginProcessingFilter;
@@ -33,7 +31,6 @@ import uz.oltinolma.producer.security.auth.jwt.JwtTokenAuthenticationProcessingF
 import uz.oltinolma.producer.security.auth.jwt.SkipPathRequestMatcher;
 import uz.oltinolma.producer.security.auth.jwt.extractor.TokenExtractor;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,7 +88,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public FilterRegistrationBean registerRTFilter(RTAuthenticationProcessingFilter filter) {
+    public FilterRegistrationBean registerRTFilter(RoutingKeyAuthorizationFilter filter) {
         FilterRegistrationBean reg = new FilterRegistrationBean(filter);
         reg.addUrlPatterns("/v1/*");
         reg.setOrder(10);
@@ -100,8 +97,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     @Bean
-    public RTAuthenticationProcessingFilter rtFilter(SecurityPermission permission) {
-        return new RTAuthenticationProcessingFilter(permission);
+    public RoutingKeyAuthorizationFilter rtFilter(SecurityPermission permission) {
+        return new RoutingKeyAuthorizationFilter(permission);
     }
 
     private JwtTokenAuthenticationProcessingFilter buildJwtTokenAuthenticationProcessingFilter() {
