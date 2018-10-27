@@ -29,7 +29,7 @@ import static uz.oltinolma.producer.security.UserDummies.authorizedUser;
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LoginTest {
+public class AuthenticationTest {
     @MockBean(name = "userServiceH2Impl")
     private UserService userService;
 

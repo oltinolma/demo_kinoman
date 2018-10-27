@@ -1,10 +1,7 @@
 package uz.oltinolma.producer.security.mvc.permission;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +13,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uz.oltinolma.producer.config.SecurityTestConfig;
+import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDao;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -59,49 +60,12 @@ class PermissionsControllerTest {
             permissionNames = new HashSet<String>();
             permissionNames.add("permission.info");
             permissionNames.add("permission.update");
+            permissionNames.add("permission.insert");
+            permissionNames.add("permission.delete");
             given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
             tokenHelper.setUserService(userService);
             tokenForAdmin = "Bearer " + tokenHelper.normalTokenForAdmin();
             given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissionNames);
-            given(permissionService.list()).willReturn(permissionDummies.getAll());
-            for (Permission p : permissionDummies.getAll()) {
-                given(permissionService.get(p.getId())).willReturn(p);
-            }
-
-
-
-        }
-
-
-        @Test
-        @DisplayName("getList() returns all permissions")
-        void getList_MustReturnAllPermissions() throws Exception {
-            mockMvc.perform(get("/permissions/list").headers(headers()))
-                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andExpect(content().json(mapper.writeValueAsString(permissionDummies.getAll())));
-        }
-
-        @Test
-        @DisplayName("getListByLogin returns permission names for current user")
-        void getListByLogin_MustReturnPermissionNamesForCurrentUser() throws Exception {
-            mockMvc.perform(get("/permissions/list/for/current/user").headers(headers()))
-                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andExpect(content().json(mapper.writeValueAsString(permissionNames)));
-
-        }
-
-        @Test
-        @DisplayName("getById returns permission object for given id")
-        void getById() throws Exception {
-            for (Permission p : permissionDummies.getAll())
-                mockMvc.perform(get("/permissions/{id}", p.getId()).headers(headers()))
-                        .andDo(print())
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("id").value(p.getId()))
-                        .andExpect(jsonPath("name").value(p.getName()))
-                        .andExpect(jsonPath("info").value(p.getInfo()));
         }
 
         private HttpHeaders headers() {
@@ -109,6 +73,72 @@ class PermissionsControllerTest {
             headers.set("X-Authorization", tokenForAdmin);
             headers.set("Content-Type", "application/json");
             return headers;
+        }
+
+        @Nested
+        @DisplayName("and updates data")
+        class UpdateTests {
+            @Autowired
+            private PermissionDao permissionDaoH2Impl;
+            @Autowired
+            private PermissionDao permissionDaoPgImpl;
+            UpdateTests() {
+                for (Permission p : permissionDummies.getAll()) {
+                    given(permissionService.update(p)).willCallRealMethod();
+                    given(permissionService.delete(p.getId())).willCallRealMethod();
+                }
+                doCallRealMethod().when(permissionService).insert(any());
+            }
+
+            @BeforeEach
+            void setup() {
+                permissionDaoPgImpl.insertAll(permissionDummies.getAll());
+                permissionDaoH2Impl.insertAll(permissionDummies.getAll());
+
+            }
+
+        }
+
+        @Nested
+        @DisplayName("and only reads data")
+        class ReadTests {
+            ReadTests() {
+                given(permissionService.list()).willReturn(permissionDummies.getAll());
+                for (Permission p : permissionDummies.getAll()) {
+                    given(permissionService.get(p.getId())).willReturn(p);
+                }
+            }
+
+            @Test
+            @DisplayName("getList() returns all permissions")
+            void getList_MustReturnAllPermissions() throws Exception {
+                mockMvc.perform(get("/permissions/list").headers(headers()))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(content().json(mapper.writeValueAsString(permissionDummies.getAll())));
+            }
+
+            @Test
+            @DisplayName("getListByLogin returns permission names for current user")
+            void getListByLogin_MustReturnPermissionNamesForCurrentUser() throws Exception {
+                mockMvc.perform(get("/permissions/list/for/current/user").headers(headers()))
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(content().json(mapper.writeValueAsString(permissionNames)));
+
+            }
+
+            @Test
+            @DisplayName("getById returns permission object for given id")
+            void getById() throws Exception {
+                for (Permission p : permissionDummies.getAll())
+                    mockMvc.perform(get("/permissions/{id}", p.getId()).headers(headers()))
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("id").value(p.getId()))
+                            .andExpect(jsonPath("name").value(p.getName()))
+                            .andExpect(jsonPath("info").value(p.getInfo()));
+            }
         }
     }
 
@@ -152,8 +182,8 @@ class PermissionsControllerTest {
         void update() throws Exception {
             String jsonPermissionToUpdate = mapper.writeValueAsString(permissionDummies.getAll().get(0));
             mockMvc.perform(put("/permissions")
-                        .headers(headers())
-                        .content(jsonPermissionToUpdate))
+                    .headers(headers())
+                    .content(jsonPermissionToUpdate))
                     .andDo(print())
                     .andExpect(status().isForbidden());
         }
@@ -163,13 +193,15 @@ class PermissionsControllerTest {
         void insert() throws Exception {
             String jsonPermissionToInsert = mapper.writeValueAsString(new Permission());
             mockMvc.perform(post("/permissions")
-                        .headers(headers())
-                        .content(jsonPermissionToInsert))
+                    .headers(headers())
+                    .content(jsonPermissionToInsert))
                     .andExpect(status().isForbidden());
         }
 
+        @Test
+        @DisplayName("delete 403")
         void deleteTest() throws Exception {
-            mockMvc.perform(delete("/permissions").headers(headers()))
+            mockMvc.perform(delete("/permissions/{id}", new Random().nextInt(1000)).headers(headers()))
                     .andExpect(status().isForbidden());
         }
 

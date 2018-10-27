@@ -33,7 +33,7 @@ import static uz.oltinolma.producer.security.UserDummies.authorizedUser;
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SecurityPermissionsTest {
+public class AuthorizationTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -107,7 +107,6 @@ public class SecurityPermissionsTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "Bearer " + tokenHelper.expiredToken());
         headers.set("Content-Type", "application/json");
-        headers.set("Routing-Key", "someRoutingKey");
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andDo(print())
                 .andExpect(status().is(401))
@@ -120,7 +119,6 @@ public class SecurityPermissionsTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "Bearer " + tokenHelper.normalTokenForAdmin());
         headers.set("Content-Type", "application/json");
-        headers.set("Routing-Key", "permission_1");
 
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andExpect(status().is(404));
