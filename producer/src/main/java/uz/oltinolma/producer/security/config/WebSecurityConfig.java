@@ -14,15 +14,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import uz.oltinolma.producer.security.RestAuthenticationEntryPoint;
 import uz.oltinolma.producer.security.auth.ajax.AjaxAuthenticationProvider;
 import uz.oltinolma.producer.security.auth.ajax.AjaxLoginProcessingFilter;
@@ -67,19 +61,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.ajaxAuthenticationProvider = ajaxAuthenticationProvider;
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setMaxAge(3600L);
-        configuration.addAllowedHeader("testHeader");
-//        configuration.setExposedHeaders(Arrays.asList("X-Authorization", "Content-Type", "Accept", "X-Requested-With"));
-//        configuration.setAllowedHeaders(Arrays.asList("X-Authorization", "Content-Type", "Accept", "X-Requested-With"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 
     private AjaxLoginProcessingFilter buildAjaxLoginProcessingFilter() {
         AjaxLoginProcessingFilter filter = new AjaxLoginProcessingFilter(FORM_BASED_LOGIN_ENTRY_POINT, successHandler, failureHandler, objectMapper);
@@ -129,11 +110,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CharacterEncodingFilter filter = new CharacterEncodingFilter();
-        filter.setEncoding("utf-8");
-        filter.setForceEncoding(true);
-        http.addFilterBefore(filter, CsrfFilter.class);
-        http.addFilterBefore(new WebSecurityCorsFilter(), ChannelProcessingFilter.class);
         http
                 .csrf().disable()
                 .exceptionHandling()
