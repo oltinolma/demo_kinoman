@@ -2,6 +2,8 @@ package uz.oltinolma.consumer.rabbitmq.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uz.oltinolma.consumer.mvc.dao.MovieDao;
+import uz.oltinolma.consumer.mvc.dao.TaxonomyDao;
 import uz.oltinolma.consumer.mvc.model.Message;
 import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
 import uz.oltinolma.consumer.mvc.movie.service.MovieService;

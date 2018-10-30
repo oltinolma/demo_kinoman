@@ -3,6 +3,8 @@ package uz.oltinolma.consumer.mvc.taxonomy.service;
 import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
 import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
 
+import java.util.List;
+
 public interface TaxonomyService {
 
     void insert(Taxonomy taxonomy);
