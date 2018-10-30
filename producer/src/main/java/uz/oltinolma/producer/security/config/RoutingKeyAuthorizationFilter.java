@@ -1,6 +1,5 @@
 package uz.oltinolma.producer.security.config;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -12,16 +11,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class RTAuthenticationProcessingFilter extends GenericFilterBean {
+public class RoutingKeyAuthorizationFilter extends GenericFilterBean {
     private SecurityPermission permission;
 
-    public RTAuthenticationProcessingFilter(SecurityPermission permission) {
+    public RoutingKeyAuthorizationFilter(SecurityPermission permission) {
         this.permission = permission;
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println("RTAuthenticationProcessingFilter#filter");
+        System.out.println("RoutingKeyAuthorizationFilter#filter");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         if (StringUtils.isEmpty(request.getHeader(WebSecurityConfig.ROUTING_KEY_HEADER_PARAM))) {

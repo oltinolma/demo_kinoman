@@ -1,20 +1,32 @@
-CREATE TABLE IF NOT EXISTS status
+DROP VIEW IF EXISTS view_notes;
+DROP VIEW IF EXISTS view_role_permission;
+--DROP VIEW IF EXISTS view_permission_login;
+DROP VIEW IF EXISTS view_user;
+DROP VIEW IF EXISTS view_notes;
+DROP TABLE IF EXISTS status;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS permission;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS login_attempts;
+DROP TABLE IF EXISTS role_permission;
+
+CREATE TABLE status
 (
   id serial primary key,
   name VARCHAR(100) NOT NULL,
   notes VARCHAR(200) NULL
 );
-CREATE TABLE IF NOT EXISTS role (
-  id INT PRIMARY KEY,
+CREATE TABLE role (
+  id serial PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE
 );
-CREATE TABLE IF NOT EXISTS permission
+CREATE TABLE permission
 (
-  id INT PRIMARY KEY,
+  id serial PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
   notes VARCHAR(200)
 );
-CREATE TABLE IF NOT EXISTS users
+CREATE TABLE users
 (
   id UUID PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -25,16 +37,16 @@ CREATE TABLE IF NOT EXISTS users
   FOREIGN KEY (id_role)
   REFERENCES public.role (id)
 );
-CREATE TABLE IF NOT EXISTS login_attempts
+CREATE TABLE login_attempts
 (
   id integer auto_increment,
   login VARCHAR(45) UNIQUE,
   attempt int NOT NULL,
   last_attempt_time TIMESTAMP NOT NULL DEFAULT now()
 );
-CREATE TABLE IF NOT EXISTS role_permission
+CREATE TABLE role_permission
 (
-  id INT PRIMARY KEY,
+  id serial PRIMARY KEY,
   id_role INT NOT NULL,
   id_permission INT NOT NULL,
   FOREIGN KEY (id_permission)
@@ -42,14 +54,14 @@ CREATE TABLE IF NOT EXISTS role_permission
   FOREIGN KEY (id_role)
   REFERENCES public.role (id)
 );
-CREATE OR REPLACE view view_permission_login
-  as SELECT e.login, p.name AS permission_name,
-  p.id as permission_id,
-  p.notes as permission_notes
-     FROM (((role_permission rp
-       JOIN users e ON ((e.id_role = rp.id_role)))
-       JOIN permission p ON ((p.id = rp.id_permission)))
-       JOIN role r ON ((r.id = e.id_role)));
+-- CREATE OR REPLACE view view_permission_login
+--   as SELECT e.login, p.name AS permission_name,
+--   p.id as permission_id,
+--   p.notes as permission_notes
+--      FROM (((role_permission rp
+--        JOIN users e ON ((e.id_role = rp.id_role)))
+--        JOIN permission p ON ((p.id = rp.id_permission)))
+--        JOIN role r ON ((r.id = e.id_role)));
 CREATE OR REPLACE view view_user
   as SELECT e.id,
        e.name,
