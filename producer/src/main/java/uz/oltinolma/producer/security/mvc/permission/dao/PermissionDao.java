@@ -10,12 +10,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import uz.oltinolma.producer.security.common.BaseResponses;
 import uz.oltinolma.producer.security.common.LogUtil;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
-import uz.oltinolma.producer.security.mvc.permission.Permissions;
+import uz.oltinolma.producer.security.mvc.permission.Permission;
 
 import javax.sql.DataSource;
 import java.util.*;
 
 public abstract class PermissionDao {
+    private static int counter;
     private static final Logger logger = LogUtil.getInstance();
     @Autowired
     private PermissionsExtractor extractor;
@@ -27,20 +28,25 @@ public abstract class PermissionDao {
     public abstract NamedParameterJdbcTemplate getTemplate();
 
     public Set<String> getByLogin(String login) {
+        System.out.println("GET_BY_LOGIN " + ++counter);
         SqlParameterSource parameterSource = new MapSqlParameterSource("login", login);
         String sql = "select permission_name from view_permission_login where login=:login";
+        sql = "SELECT p.name AS permission_name FROM permission p \n" +
+                "WHERE p.id IN (SELECT rp.id_permission FROM role_permission rp \n" +
+                "WHERE rp.id_role = (SELECT u.id_role FROM users u \n" +
+                "WHERE u.login = :login))";
         return new LinkedHashSet<String>(getTemplate().query(sql, parameterSource, (resultSet, rowNum) -> resultSet.getString("permission_name")));
     }
 
-    public List<Permissions> list() {
+    public List<Permission> list() {
         String sql = "SELECT * FROM permission order by id";
         return getTemplate().query(sql, (resultSet, i) -> extractor.extract(resultSet));
     }
 
-    public Permissions get(int id) {
+    public Permission get(int id) {
         String sql = "SELECT * FROM permission WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
-        return this.getTemplate().query(sql, parameterSource, (ResultSetExtractor<Permissions>) resultSet -> {
+        return this.getTemplate().query(sql, parameterSource, (ResultSetExtractor<Permission>) resultSet -> {
             if (resultSet.next()) {
                 return extractor.extract(resultSet);
             }
@@ -48,13 +54,13 @@ public abstract class PermissionDao {
         });
     }
     /**@Override in order to use */
-    public BaseResponse insertAll(List<Permissions> permissions) {
+    public BaseResponse insertAll(List<Permission> permissions) {
         throw new UnsupportedOperationException();
     }
 
-    public abstract int insert(Permissions permissions);
+    public abstract int insert(Permission permissions);
 
-    public BaseResponse update(Permissions permissions) {
+    public BaseResponse update(Permission permissions) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("id", permissions.getId());
         map.put("name", permissions.getName());

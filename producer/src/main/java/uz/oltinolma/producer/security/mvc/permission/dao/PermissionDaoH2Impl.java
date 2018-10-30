@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import uz.oltinolma.producer.security.common.LogUtil;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
-import uz.oltinolma.producer.security.mvc.permission.Permissions;
+import uz.oltinolma.producer.security.mvc.permission.Permission;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -30,11 +30,11 @@ public class PermissionDaoH2Impl extends PermissionDao {
     }
 
     @Override
-    public BaseResponse insertAll(List<Permissions> permissions) {
+    public BaseResponse insertAll(List<Permission> permissions) {
         String sql = "INSERT INTO permission(id, name, notes) VALUES (:id, :name, :notes)";
         Map<String, Object>[] batch = new HashMap[permissions.size()];
         for (int i = 0; i < permissions.size(); i++) {
-            Permissions permission = permissions.get(i);
+            Permission permission = permissions.get(i);
             Map<String, Object> map = new HashMap<>();
             map.put("id", permission.getId());
             map.put("name", permission.getName());
@@ -50,7 +50,7 @@ public class PermissionDaoH2Impl extends PermissionDao {
         return baseResponses.successMessage();
     }
 
-    public int insert(Permissions permissions) {
+    public int insert(Permission permissions) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", permissions.getId());
         map.put("name", permissions.getName());
@@ -58,19 +58,5 @@ public class PermissionDaoH2Impl extends PermissionDao {
         String sql = "INSERT INTO permission(id, name,notes) VALUES (:id,:name,:notes)";
 
         return this.getTemplate().update(sql, map);
-    }
-
-    public List<Permissions> listByLoginPermissionWithTopic(String login, String topic) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("login", login);
-        String sql = "select * from view_permission_login where permission_name like '%" + topic + "%' and login=:login";
-        //TODO cant execute parametred query need to fix
-        return template.query(sql, map, (resultSet, i) -> {
-            Permissions permissions = new Permissions();
-            permissions.setId(resultSet.getInt("permission_id"));
-            permissions.setName(resultSet.getString("permission_name"));
-            permissions.setInfo(resultSet.getString("permission_notes"));
-            return permissions;
-        });
     }
 }

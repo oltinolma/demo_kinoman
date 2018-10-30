@@ -20,8 +20,19 @@ spring:
       driver-class-name: org.h2.Driver
       init-sql: h2.sql
 
+elasticsearch:
+  clustername : ${KINOMAN_EL_CLUSTERNAME}
+  host : ${KINOMAN_EL_HOST}
+  port : 9300
+  node: ${KINOMAN_EL_NODE}
 
+rabbitmq:
+  host: ${KINOMAN_RABBITMQ_HOST}
+  username: ${KINOMAN_RABBITMQ_USER}
+  password: ${KINOMAN_RABBITMQ_PASSWORD}
+  port: 5672
 
+file.uploadDir: ./kinoman-resources
 
 
 

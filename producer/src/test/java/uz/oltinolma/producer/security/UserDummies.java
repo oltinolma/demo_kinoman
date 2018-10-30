@@ -13,17 +13,25 @@ import java.util.UUID;
 
 public class UserDummies {
     private static final PasswordEncoder encoder = new BCryptPasswordEncoder();
-    public static User sampleUser() {
+    public static User authorizedUser() {
+        return new User(UUID.randomUUID(), "admin", encoder.encode("correct_password"), "administrator", true);
+    }
+
+    public static User guestUser() {
         return new User(UUID.randomUUID(), "user", encoder.encode("correct_password"), "guest", true);
     }
 
+    public static UserContext userContextForAdmin() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(authorizedUser().getRole()));
 
-
+        return UserContext.create(authorizedUser().getLogin(), authorities, null);
+    }
 
     public static UserContext userContextForGuest() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(sampleUser().getRole()));
+        authorities.add(new SimpleGrantedAuthority(guestUser().getRole()));
 
-        return UserContext.create(sampleUser().getLogin(), authorities, null);
+        return UserContext.create(guestUser().getLogin(), authorities, null);
     }
 }

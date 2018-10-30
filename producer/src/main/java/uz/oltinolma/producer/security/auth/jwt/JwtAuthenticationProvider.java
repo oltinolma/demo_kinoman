@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 @Component
 @SuppressWarnings("unchecked")
 public class JwtAuthenticationProvider implements AuthenticationProvider {
-    private static final Logger logger = LogUtil.getInstance();
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationProvider.class.getName());
     private final JwtSettings jwtSettings;
     @Autowired
     @Qualifier("permissionServiceH2Impl")

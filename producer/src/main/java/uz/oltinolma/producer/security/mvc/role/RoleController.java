@@ -13,7 +13,7 @@ import uz.oltinolma.producer.security.mvc.role.service.RoleService;
 import java.util.List;
 
 @RestController
-@Api(value = "x-market", description = "Huquqlar bilan bog'liq operatsiyalar")
+@Api(value = "demo_kinoman", description = "Huquqlar bilan bog'liq operatsiyalar")
 @RequestMapping(value = "/role")
 public class RoleController {
     @Autowired
@@ -24,23 +24,23 @@ public class RoleController {
     private RoleService roleServicePostgresImpl;
 
 
-    @PreAuthorize("@SecurityPermission.hasPermission('role.update')")
+    @PreAuthorize("@SecurityPermission.hasPermission('role.info')")
     @ApiOperation(value = "Ma'lum ID lik huquqni olish", response = Role.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public Role get(@PathVariable int id) {
         return roleServiceH2Impl.get(id);
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('role.update')")
     @ApiOperation(value = "Ma'lum ID lik huquqni tahrirlash", response = BaseResponse.class)
-    @RequestMapping(method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @PutMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse update(@Validated @RequestBody Role role) {
         return roleServicePostgresImpl.update(role);
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('role.insert')")
     @ApiOperation(value = "Yangi huquq yaratish", response = BaseResponse.class)
-    @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse insert(@Validated @RequestBody Role role) {
         roleServicePostgresImpl.insert(role);
         return baseResponses.successMessage();
@@ -48,7 +48,7 @@ public class RoleController {
 
     @PreAuthorize("@SecurityPermission.hasPermission('role.insert')")
     @ApiOperation(value = "Yangi huquq yaratish", response = BaseResponse.class)
-    @RequestMapping(value = "/all", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/all", consumes = "application/json", produces = "application/json")
     public BaseResponse insertAll(@Validated @RequestBody List<Role> roles) {
         return roleServiceH2Impl.insertAll(roles);
     }

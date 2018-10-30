@@ -70,29 +70,38 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://uos.uz", "*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setMaxAge(3600L);
+        configuration.addAllowedHeader("testHeader");
+//        configuration.setExposedHeaders(Arrays.asList("X-Authorization", "Content-Type", "Accept", "X-Requested-With"));
+//        configuration.setAllowedHeaders(Arrays.asList("X-Authorization", "Content-Type", "Accept", "X-Requested-With"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
-    @Bean
-    protected AjaxLoginProcessingFilter buildAjaxLoginProcessingFilter() {
+    private AjaxLoginProcessingFilter buildAjaxLoginProcessingFilter() {
         AjaxLoginProcessingFilter filter = new AjaxLoginProcessingFilter(FORM_BASED_LOGIN_ENTRY_POINT, successHandler, failureHandler, objectMapper);
         filter.setAuthenticationManager(this.authenticationManager);
         return filter;
     }
 
     @Bean
-    public FilterRegistrationBean registerCorsFilter(RTAuthenticationProcessingFilter filter) {
+    public FilterRegistrationBean registerRTFilter(RoutingKeyAuthorizationFilter filter) {
         FilterRegistrationBean reg = new FilterRegistrationBean(filter);
+        reg.addUrlPatterns("/v1/*");
         reg.setOrder(10);
         return reg;
     }
 
+    @Autowired
     @Bean
-    protected JwtTokenAuthenticationProcessingFilter buildJwtTokenAuthenticationProcessingFilter() {
+    public RoutingKeyAuthorizationFilter rtFilter(SecurityPermission permission) {
+        return new RoutingKeyAuthorizationFilter(permission);
+    }
+
+    private JwtTokenAuthenticationProcessingFilter buildJwtTokenAuthenticationProcessingFilter() {
         List<String> pathsToSkip = Arrays.asList(TOKEN_REFRESH_ENTRY_POINT, FORM_BASED_LOGIN_ENTRY_POINT, SEARCH_BASED_ENTRY_POINT);
         SkipPathRequestMatcher matcher = new SkipPathRequestMatcher(pathsToSkip, TOKEN_BASED_AUTH_ENTRY_POINT);
         JwtTokenAuthenticationProcessingFilter filter
@@ -106,6 +115,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(ajaxAuthenticationProvider);
@@ -123,7 +133,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setEncoding("utf-8");
         filter.setForceEncoding(true);
         http.addFilterBefore(filter, CsrfFilter.class);
-
         http.addFilterBefore(new WebSecurityCorsFilter(), ChannelProcessingFilter.class);
         http
                 .csrf().disable()
@@ -137,8 +146,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(FORM_BASED_LOGIN_ENTRY_POINT).permitAll()
                 .antMatchers(TOKEN_REFRESH_ENTRY_POINT).permitAll()
                 .antMatchers(SEARCH_BASED_ENTRY_POINT).permitAll()
-                .and()
-                .authorizeRequests()
                 .antMatchers(TOKEN_BASED_AUTH_ENTRY_POINT).authenticated()
                 .and()
                 .addFilterBefore(buildAjaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)

@@ -4,22 +4,22 @@ import java.util.List;
 
 public class UIPermissionResponse {
 
-    List<Permissions> menus;
-    List<Permissions> actions;
+    List<Permission> menus;
+    List<Permission> actions;
 
-    public List<Permissions> getMenus() {
+    public List<Permission> getMenus() {
         return menus;
     }
 
-    public void setMenus(List<Permissions> menus) {
+    public void setMenus(List<Permission> menus) {
         this.menus = menus;
     }
 
-    public List<Permissions> getActions() {
+    public List<Permission> getActions() {
         return actions;
     }
 
-    public void setActions(List<Permissions> actions) {
+    public void setActions(List<Permission> actions) {
         this.actions = actions;
     }
 }
