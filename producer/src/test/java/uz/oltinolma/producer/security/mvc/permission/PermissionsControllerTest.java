@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uz.oltinolma.producer.config.SecurityTestConfig;
@@ -21,9 +22,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -83,7 +82,6 @@ class PermissionsControllerTest {
             @Autowired
             private PermissionDao permissionDaoPgImpl;
             UpdateTests() {
-                
             }
 
             @BeforeEach

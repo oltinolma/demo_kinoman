@@ -43,10 +43,13 @@ public class AuthorizationTest {
     @MockBean(name = "permissionServiceH2Impl")
     private PermissionService permissionService;
 
-    @Autowired
     private SecurityTestConfig.TokenHelper
             tokenHelper;
 
+    @Autowired
+    public void setTokenHelper(SecurityTestConfig.TokenHelper tokenHelper) {
+        this.tokenHelper = tokenHelper;
+    }
 
     @BeforeEach
     public void setup() {
