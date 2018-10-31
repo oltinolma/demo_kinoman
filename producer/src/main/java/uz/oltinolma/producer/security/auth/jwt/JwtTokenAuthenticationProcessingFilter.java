@@ -34,12 +34,12 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        String tokenPayload = request.getHeader(WebSecurityConfig.JWT_TOKEN_HEADER_PARAM);
-        RawAccessJwtToken token = new RawAccessJwtToken(tokenExtractor.extract(tokenPayload));
+        String token = request.getHeader(WebSecurityConfig.JWT_TOKEN_HEADER_PARAM);
+        RawAccessJwtToken rawAccessJwtToken = new RawAccessJwtToken(tokenExtractor.extract(token));
         if (isFromMobileDevice(request)) {
-            token.setFromMobileDevice(true);
+            rawAccessJwtToken.setFromMobileDevice(true);
         }
-        return getAuthenticationManager().authenticate(new JwtAuthenticationToken(token));
+        return getAuthenticationManager().authenticate(new JwtAuthenticationToken(rawAccessJwtToken));
     }
 
     private boolean isFromMobileDevice(HttpServletRequest request) {

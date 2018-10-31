@@ -57,10 +57,10 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
         validateEmployee(employee);
         validatePassword(login, password, employee.getPassword());
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(employee.getRole()));
-        UserContext userContext = UserContext.create(employee.getLogin(), authorities, permissionService.getByLogin(login));
-        return new UsernamePasswordAuthenticationToken(userContext, null, userContext.getAuthorities());
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(employee.getRole()));
+        UserContext userContext = UserContext.create(employee.getLogin(), permissionService.getByLogin(login));
+        return new UsernamePasswordAuthenticationToken(userContext, null, new ArrayList<>());
     }
 
     private void validatePassword(String login, String password, String expectedPw) {

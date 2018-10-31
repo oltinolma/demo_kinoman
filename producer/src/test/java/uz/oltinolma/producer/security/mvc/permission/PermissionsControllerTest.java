@@ -69,7 +69,6 @@ class PermissionsControllerTest {
             permissionNames.add("permission.insert");
             permissionNames.add("permission.delete");
             given(userServiceH2Impl.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
-            tokenHelper.setUserService(userServiceH2Impl);
             tokenForAdmin = "Bearer " + tokenHelper.normalTokenForAdmin();
             given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissionNames);
         }
@@ -162,7 +161,7 @@ class PermissionsControllerTest {
         WhenUnauthorized() {
             permissionDummies = new PermissionDummies();
             given(userServiceH2Impl.findByLogin(guestUser().getLogin())).willReturn(guestUser());
-            tokenHelper.setUserService(userServiceH2Impl);
+//            tokenHelper.setUserService(userServiceH2Impl);
             tokenForGuest = "Bearer " + tokenHelper.normalTokenForGuest();
         }
 

@@ -58,7 +58,6 @@ public class AuthorizationTest {
         permissions.add("permission_2");
         given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissions);
         given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
-        tokenHelper.setUserService(userService);
     }
 
     @Test
