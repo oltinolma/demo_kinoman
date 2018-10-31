@@ -69,19 +69,18 @@ public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingF
     }
 
     private void validateRequest(HttpServletRequest request) {
-        logger.warn("Incoming request method : " + request.getMethod());
-        logger.warn("Incoming request is ajax : " + WebUtil.isAjax(request));
-        logger.warn("Is valid request : " + !(!HttpMethod.POST.name().equals(request.getMethod()) || !WebUtil.isAjax(request)));
-        if (!HttpMethod.POST.name().equals(request.getMethod()) || !WebUtil.isAjax(request)) {
+        if (!WebUtil.isPost(request)) {
             logger.error("Authentication method not supported. Request method: " + request.getMethod());
-            logger.error("Check is ajax :  " + !WebUtil.isAjax(request));
             throw new AuthMethodNotSupportedException("Authentication method not supported.");
+        } else if (!WebUtil.isAjax(request)) {
+            logger.error("Authentication request is not AJAX.");
+            throw new AuthMethodNotSupportedException("Authentication request is not AJAX");
         }
     }
 
     private void validateLoginAndPasswordInput(LoginRequest loginRequest) {
         if (StringUtils.isBlank(loginRequest.getLogin()) || StringUtils.isBlank(loginRequest.getPassword())) {
-            throw new AuthenticationServiceException("username yoki password ko'rsatilmagan");
+            throw new AuthenticationServiceException("Login or password cannot be empty!");
         }
     }
 
