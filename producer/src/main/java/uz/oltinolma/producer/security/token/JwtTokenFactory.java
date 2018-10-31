@@ -33,16 +33,10 @@ public class JwtTokenFactory {
     }
 
     public AccessJwtToken createAccessJwtToken(UserContext userContext) {
-        String login = userContext.getLogin();
-        if (StringUtils.isBlank(login))
-            throw new IllegalArgumentException("Cannot create JWT Token without username");
+        validateUserContext(userContext);
 
-        if (userContext.getAuthorities() == null || userContext.getAuthorities().isEmpty())
-            throw new IllegalArgumentException("User doesn't have any privileges");
-        User user = userService.findByLogin(login);
-        Claims claims = Jwts.claims().setSubject(login);
+        Claims claims = Jwts.claims().setSubject(userContext.getLogin());
         claims.put("scopes", userContext.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
-        claims.put("id_user", user.getId());
         DateTime currentTime = new DateTime();
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -55,17 +49,19 @@ public class JwtTokenFactory {
         return new AccessJwtToken(token, claims);
     }
 
-    public AccessJwtToken createAccessJwtToken(UserContext userContext, Date issuedAt, Date expiresAt) {
+    private void validateUserContext(UserContext userContext) {
         String login = userContext.getLogin();
         if (StringUtils.isBlank(login))
             throw new IllegalArgumentException("Cannot create JWT Token without username");
 
         if (userContext.getAuthorities() == null || userContext.getAuthorities().isEmpty())
             throw new IllegalArgumentException("User doesn't have any privileges");
-        User user = userService.findByLogin(login);
-        Claims claims = Jwts.claims().setSubject(login);
+    }
+
+    public AccessJwtToken createAccessJwtToken(UserContext userContext, Date issuedAt, Date expiresAt) {
+        validateUserContext(userContext);
+        Claims claims = Jwts.claims().setSubject(userContext.getLogin());
         claims.put("scopes", userContext.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
-        claims.put("id_user", user.getId());
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuer(settings.getTokenIssuer())

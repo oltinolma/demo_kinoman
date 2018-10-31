@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uz.oltinolma.producer.config.SecurityTestConfig;
@@ -22,7 +22,9 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,12 +43,17 @@ class PermissionsControllerTest {
     @SpyBean(name = "permissionServiceH2Impl")
     private PermissionService permissionService;
     @SpyBean(name = "userServiceH2Impl")
-    private UserService userService;
+    private UserService userServiceH2Impl;
     private PermissionDummies permissionDummies;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
+
+    @SpyBean(name = "permissionDaoH2Impl")
+    private PermissionDao permissionDaoH2Impl;
+//    @SpyBean(name = "permissionDaoPostgesImpl")
+//    private PermissionDao permissionDaoPostgesImpl;
 
     @Nested
     @DisplayName("when authorized")
@@ -61,8 +68,8 @@ class PermissionsControllerTest {
             permissionNames.add("permission.update");
             permissionNames.add("permission.insert");
             permissionNames.add("permission.delete");
-            given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
-            tokenHelper.setUserService(userService);
+            given(userServiceH2Impl.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
+            tokenHelper.setUserService(userServiceH2Impl);
             tokenForAdmin = "Bearer " + tokenHelper.normalTokenForAdmin();
             given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissionNames);
         }
@@ -77,19 +84,30 @@ class PermissionsControllerTest {
         @Nested
         @DisplayName("and updates data")
         class UpdateTests {
-            @Autowired
-            private PermissionDao permissionDaoH2Impl;
-            @Autowired
-            private PermissionDao permissionDaoPgImpl;
+
             UpdateTests() {
+
             }
 
             @BeforeEach
             void setup() {
-                permissionDaoPgImpl.insertAll(permissionDummies.getAll());
-                permissionDaoH2Impl.insertAll(permissionDummies.getAll());
-
             }
+
+            @Test
+            void temp() {
+//                permissionDaoH2Impl.update(new Permission());
+//                verify(permissionService).update(any(Permission.class));
+//                InOrder orderVerifier = inOrder(permissionDaoH2Impl,
+//                        permissionDaoPgImpl,
+//                        userServicePgImpl,
+//                        userServiceH2Impl);
+//
+//                orderVerifier.verify(userServiceH2Impl).update(any());
+//                orderVerifier.verify(userServicePgImpl).update(any());
+//                orderVerifier.verify(permissionDaoH2Impl).update(any());
+//                orderVerifier.verify(permissionDaoPgImpl).update(any());
+            }
+
 
         }
 
@@ -143,8 +161,8 @@ class PermissionsControllerTest {
 
         WhenUnauthorized() {
             permissionDummies = new PermissionDummies();
-            given(userService.findByLogin(guestUser().getLogin())).willReturn(guestUser());
-            tokenHelper.setUserService(userService);
+            given(userServiceH2Impl.findByLogin(guestUser().getLogin())).willReturn(guestUser());
+            tokenHelper.setUserService(userServiceH2Impl);
             tokenForGuest = "Bearer " + tokenHelper.normalTokenForGuest();
         }
 

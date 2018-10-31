@@ -52,13 +52,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         RawAccessJwtToken rawAccessToken = (RawAccessJwtToken) authentication.getCredentials();
         Jws<Claims> jwsClaims = rawAccessToken.parseClaims(jwtSettings.getTokenSigningKey());
         String login = jwsClaims.getBody().getSubject();
-        String id_user_str = String.valueOf(jwsClaims.getBody().get("id_user"));
-        UUID id_user = null;
-        if (id_user_str.equals("null")) {
-            throw new AuthenticationServiceException("Your token is expired!");
-        } else if (!StringUtils.isEmpty(id_user_str)) {
-            id_user = UUID.fromString(String.valueOf(id_user_str));
-        }
+
         List<String> scopes = jwsClaims.getBody().get("scopes", List.class);
         List<GrantedAuthority> authorities = scopes.stream()
                 .map(SimpleGrantedAuthority::new)
@@ -72,7 +66,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         boolean isValidScope = !authorities.retainAll(inFactAuthList);
         if (isValidScope) {
             UserContext context = UserContext.create(login, authorities, permissionService.getByLogin(login));
-            context.setId_user(id_user);
             return new JwtAuthenticationToken(context, context.getAuthorities());
         } else throw new JwtExpiredTokenException("The token scope mismatch!");
     }
