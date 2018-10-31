@@ -10,7 +10,6 @@ public class RawAccessJwtToken implements JwtToken {
     private static Logger logger = LoggerFactory.getLogger(RawAccessJwtToken.class);
 
     private String token;
-    private boolean fromMobileDevice;
 
     public RawAccessJwtToken(String token) {
         this.token = token;
@@ -33,11 +32,4 @@ public class RawAccessJwtToken implements JwtToken {
         return token;
     }
 
-    public boolean isFromMobileDevice() {
-        return fromMobileDevice;
-    }
-
-    public void setFromMobileDevice(boolean fromMobileDevice) {
-        this.fromMobileDevice = fromMobileDevice;
-    }
 }

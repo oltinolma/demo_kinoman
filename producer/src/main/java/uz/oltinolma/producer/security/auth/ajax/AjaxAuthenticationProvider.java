@@ -11,20 +11,17 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.security.model.UserContext;
+import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.User;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
-import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
-import uz.oltinolma.producer.security.model.UserContext;
 
 import java.util.ArrayList;
-import java.util.List;
 @Component
 @Lazy
 public class AjaxAuthenticationProvider implements AuthenticationProvider {
