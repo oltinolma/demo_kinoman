@@ -1,5 +1,6 @@
 package uz.oltinolma.producer.security.common;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,10 @@ public class WebUtil {
 
     public static boolean isAjax(HttpServletRequest request) {
         return XML_HTTP_REQUEST.equals(request.getHeader(X_REQUESTED_WITH));
+    }
+
+    public static boolean isPost(HttpServletRequest request) {
+        return HttpMethod.POST.name().equals(request.getMethod());
     }
 
     public static boolean isAjax(SavedRequest request) {
