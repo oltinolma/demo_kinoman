@@ -30,9 +30,9 @@ public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingF
     private final AuthenticationFailureHandler failureHandler;
 
     private final ObjectMapper objectMapper;
-    
-    public AjaxLoginProcessingFilter(String defaultProcessUrl, AuthenticationSuccessHandler successHandler, 
-            AuthenticationFailureHandler failureHandler, ObjectMapper mapper) {
+
+    public AjaxLoginProcessingFilter(String defaultProcessUrl, AuthenticationSuccessHandler successHandler,
+                                     AuthenticationFailureHandler failureHandler, ObjectMapper mapper) {
         super(defaultProcessUrl);
         this.successHandler = successHandler;
         this.failureHandler = failureHandler;
@@ -56,12 +56,14 @@ public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingF
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException {
         validateRequest(request);
-        LoginRequest loginRequest = extractLoginRequestFromBody(request);
+        LoginRequest lr = extractLoginRequestFromBody(request);
 
-        validateLoginAndPasswordInput(loginRequest);
+        validateLoginAndPasswordInput(lr);
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword());
-        return this.getAuthenticationManager().authenticate(token);
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(lr.getLogin(), lr.getPassword());
+
+        return getAuthenticationManager().authenticate(token);
     }
 
     private LoginRequest extractLoginRequestFromBody(HttpServletRequest request) throws IOException {
