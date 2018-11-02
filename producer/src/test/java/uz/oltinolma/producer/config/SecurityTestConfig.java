@@ -41,9 +41,5 @@ public class SecurityTestConfig {
         public String normalTokenForGuest() {
             return tokenFactory.createAccessJwtToken(userContextForGuest()).getToken();
         }
-
-        public void setUserService(UserService us) {
-            tokenFactory.setUserService(us);
-        }
     }
 }

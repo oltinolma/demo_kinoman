@@ -10,7 +10,6 @@ public class RawAccessJwtToken implements JwtToken {
     private static Logger logger = LoggerFactory.getLogger(RawAccessJwtToken.class);
 
     private String token;
-    private boolean fromMobileDevice;
 
     public RawAccessJwtToken(String token) {
         this.token = token;
@@ -20,10 +19,10 @@ public class RawAccessJwtToken implements JwtToken {
         try {
             return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(this.token);
         } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException ex) {
-//            logger.error("Invalid JWT Token", ex);
+            logger.error("Invalid JWT Token", ex);
             throw new BadCredentialsException("Invalid access token.", ex);
         } catch (ExpiredJwtException expiredEx) {
-//            logger.info("JWT Token is expired", expiredEx);
+            logger.info("JWT Token is expired", expiredEx);
             throw new JwtExpiredTokenException(this, "Access token is expired.", expiredEx);
         }
     }
@@ -33,11 +32,4 @@ public class RawAccessJwtToken implements JwtToken {
         return token;
     }
 
-    public boolean isFromMobileDevice() {
-        return fromMobileDevice;
-    }
-
-    public void setFromMobileDevice(boolean fromMobileDevice) {
-        this.fromMobileDevice = fromMobileDevice;
-    }
 }

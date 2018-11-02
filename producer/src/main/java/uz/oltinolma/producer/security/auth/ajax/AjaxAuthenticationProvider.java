@@ -11,20 +11,17 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.security.model.UserContext;
+import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.User;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
-import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
-import uz.oltinolma.producer.security.model.UserContext;
 
 import java.util.ArrayList;
-import java.util.List;
 @Component
 @Lazy
 public class AjaxAuthenticationProvider implements AuthenticationProvider {
@@ -57,10 +54,10 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
         validateEmployee(employee);
         validatePassword(login, password, employee.getPassword());
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(employee.getRole()));
-        UserContext userContext = UserContext.create(employee.getLogin(), authorities, permissionService.getByLogin(login));
-        return new UsernamePasswordAuthenticationToken(userContext, null, userContext.getAuthorities());
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(employee.getRole()));
+        UserContext userContext = UserContext.create(employee.getLogin(), permissionService.getByLogin(login));
+        return new UsernamePasswordAuthenticationToken(userContext, null, new ArrayList<>());
     }
 
     private void validatePassword(String login, String password, String expectedPw) {
