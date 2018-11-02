@@ -3,9 +3,8 @@ package uz.oltinolma.consumer.mvc.movie.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.oltinolma.consumer.mvc.movie.dao.MovieDao;
-import uz.oltinolma.consumer.mvc.movie.Movie;
-import uz.oltinolma.consumer.mvc.movie.service.MovieService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +32,22 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<Movie> list() {
+    public List<Object> list() {
         return movieDao.list();
+    }
+
+    @Override
+    public Object getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies) {
+        return movieDao.getMoviesListFromRequestedTaxonomiesForMenu(taxonomies);
+    }
+
+    @Override
+    public HashMap<String, Object> getMovieAsObject(UUID id) {
+        return (HashMap<String, Object>) movieDao.getMovieAsObject(id);
+    }
+
+    @Override
+    public Object getMovieListFromRequestedTaxonomies(List<String> taxonomies) {
+        return movieDao.getMovieListFromRequestedTaxonomies(taxonomies);
     }
 }

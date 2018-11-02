@@ -3,7 +3,9 @@ package uz.oltinolma.consumer.mvc.taxonomy.service;
 import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
 import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public interface TaxonomyService {
 
@@ -18,5 +20,7 @@ public interface TaxonomyService {
     ResponseWrapper getAll();
 
     String listForInputLabels();
+
+    List<HashMap<String, Object>>  getListByMovieId(UUID movieId);
 
 }

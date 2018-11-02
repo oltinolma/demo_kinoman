@@ -2,6 +2,7 @@ package uz.oltinolma.consumer.mvc.movie.service;
 
 import uz.oltinolma.consumer.mvc.movie.Movie;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,5 +12,11 @@ public interface MovieService {
 
     void insert(String json);
 
-    List<Movie> list();
+    List<Object> list();
+
+    Object getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies);
+
+    HashMap<String, Object> getMovieAsObject(UUID id);
+
+    Object getMovieListFromRequestedTaxonomies(List<String> taxonomies);
 }
