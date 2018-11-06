@@ -1,7 +1,5 @@
 package uz.oltinolma.consumer.mvc.taxonomy.dao;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,11 +8,10 @@ import org.springframework.stereotype.Repository;
 import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Repository
 public class TaxonomyDaoImpl implements TaxonomyDao {
@@ -76,5 +73,13 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
             return resultSet.getString("x");
             else return null;
         });
+    }
+
+    @Override
+    public List<HashMap<String, Object>> getListByMovieId(UUID movieId) {
+        String sql = "SELECT taxonomy_name, parent_name, movie_id, movie_created_date, movie_release_date "+
+                "FROM view_movie_taxonomy_with_base_parent where movie_id =:id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", movieId);
+        return namedParameterJdbcTemplate.query(sql,parameterSource, (resultSet, i) -> TaxonomyExtractor.extractAsHashMap(resultSet));
     }
 }

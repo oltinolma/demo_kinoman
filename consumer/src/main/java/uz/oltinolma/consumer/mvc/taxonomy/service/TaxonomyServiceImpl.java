@@ -6,6 +6,10 @@ import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class TaxonomyServiceImpl implements TaxonomyService {
 
@@ -43,6 +47,11 @@ public class TaxonomyServiceImpl implements TaxonomyService {
 
     @Override
     public String listForInputLabels() {
-       return (String) taxonomyDao.listForInputLabels();
+        return (String) taxonomyDao.listForInputLabels();
+    }
+
+    @Override
+    public List<HashMap<String, Object>> getListByMovieId(UUID movieId) {
+        return taxonomyDao.getListByMovieId(movieId);
     }
 }

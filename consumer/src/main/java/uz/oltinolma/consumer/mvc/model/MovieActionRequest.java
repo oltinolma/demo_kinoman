@@ -1,5 +1,7 @@
 package uz.oltinolma.consumer.mvc.model;
 
+import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -29,9 +31,6 @@ public class MovieActionRequest {
     }
 
     public void setTaxonomies(List<Taxonomy> taxonomies) {
-        this.taxonomies = taxonomies;
-    }
-}
         this.taxonomies = taxonomies;
     }
 }

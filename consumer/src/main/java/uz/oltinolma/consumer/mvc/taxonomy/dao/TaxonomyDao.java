@@ -2,7 +2,9 @@ package uz.oltinolma.consumer.mvc.taxonomy.dao;
 
 import uz.oltinolma.consumer.mvc.taxonomy.Taxonomy;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public interface TaxonomyDao {
 
@@ -17,5 +19,7 @@ public interface TaxonomyDao {
     List<Taxonomy> getAll();
 
     Object listForInputLabels();
+
+    List<HashMap<String, Object>>  getListByMovieId(UUID movieId);
 
 }

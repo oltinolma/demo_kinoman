@@ -2,8 +2,8 @@ package uz.oltinolma.consumer.rabbitmq.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uz.oltinolma.consumer.mvc.dao.MovieDao;
-import uz.oltinolma.consumer.mvc.dao.TaxonomyDao;
+//import uz.oltinolma.consumer.mvc.dao.MovieDao;
+//import uz.oltinolma.consumer.mvc.dao.TaxonomyDao;
 import uz.oltinolma.consumer.mvc.model.Message;
 import uz.oltinolma.consumer.mvc.model.ResponseWrapper;
 import uz.oltinolma.consumer.mvc.movie.service.MovieService;
@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Component
-@RabbitListener(priority = "1", queues = "kinoman.request",
+@RabbitListener(priority = "110", queues = "kinoman.request",
         containerFactory = "directMessageListenerContainer")
 public class GenericRequestsListener {
 
@@ -59,13 +61,19 @@ public class GenericRequestsListener {
                     response = taxonomyService.listForInputLabels();
                     break;
                 case "request.movie.info.by.id":
-                    System.out.println("movie info as json");
                     UUID id_movie = UUID.fromString(String.valueOf(message.getParams().get("id")));
-                    response = movieService.movieInfoById(id_movie);
+                    response = objectMapper.writeValueAsString(movieService.getMovieAsObject(id_movie));
+                    break;
+                case "request.movie.list.by.requested.taxonomies.for.menu":
+                    List<String> requestListForMenu = (List<String>) message.getParams().get("taxonomies");
+                    response = objectMapper.writeValueAsString(movieService.getMoviesListFromRequestedTaxonomiesForMenu(requestListForMenu));
+                    break;
+                case "request.movie.list.by.requested.taxonomies":
+                    List<String> requestedTaxonomiesList = (List<String>) message.getParams().get("taxonomies");
+                    response = objectMapper.writeValueAsString(movieService.getMovieListFromRequestedTaxonomies(requestedTaxonomiesList));
                     break;
                 case "request.movie.list":
-                    System.out.println("list of all movies");
-                    response = new ResponseWrapper(movieService.list()).toJSON();
+                    response = objectMapper.writeValueAsString(movieService.list());
                     break;
                 default:
                     System.out.println("default case");
@@ -73,6 +81,7 @@ public class GenericRequestsListener {
                     break;
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             response = new ResponseWrapper("something went wrong, try again please!").toJSON();
         }
         return response;
