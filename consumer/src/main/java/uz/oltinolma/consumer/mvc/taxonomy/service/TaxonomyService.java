@@ -22,5 +22,6 @@ public interface TaxonomyService {
     String listForInputLabels();
 
     List<HashMap<String, Object>>  getListByMovieId(UUID movieId);
+    String getAsHierarchicalStructure(Integer id);
 
 }

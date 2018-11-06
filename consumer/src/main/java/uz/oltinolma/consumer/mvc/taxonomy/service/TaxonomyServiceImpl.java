@@ -54,4 +54,9 @@ public class TaxonomyServiceImpl implements TaxonomyService {
     public List<HashMap<String, Object>> getListByMovieId(UUID movieId) {
         return taxonomyDao.getListByMovieId(movieId);
     }
+
+    @Override
+    public String   getAsHierarchicalStructure(Integer id) {
+        return String.valueOf(taxonomyDao.getAsHierarchicalStructure(id));
+    }
 }

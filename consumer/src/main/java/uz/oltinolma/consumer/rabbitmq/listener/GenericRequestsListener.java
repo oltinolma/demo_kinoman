@@ -54,7 +54,7 @@ public class GenericRequestsListener {
                     break;
                 case "request.taxonomy.list":
                     System.out.println("taxonomy list");
-                    response = taxonomyService.getAll().toJSON();
+                    response = taxonomyService.getAsHierarchicalStructure((Integer) message.getParams().get("id"));
                     break;
                 case "request.taxonomy.menu.list":
                     System.out.println("taxonomy menu list");
