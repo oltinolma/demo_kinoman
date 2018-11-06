@@ -72,7 +72,7 @@ public class GenericRequestsListener {
                     List<String> requestedTaxonomiesList = (List<String>) message.getParams().get("taxonomies");
                     response = objectMapper.writeValueAsString(movieService.getMovieListFromRequestedTaxonomies(requestedTaxonomiesList));
                     break;
-                case "request.movie.list":
+                case "request.open.movie.list":
                     response = objectMapper.writeValueAsString(movieService.list());
                     break;
                 default:

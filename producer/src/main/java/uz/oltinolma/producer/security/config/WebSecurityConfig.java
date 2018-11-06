@@ -35,6 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String JWT_TOKEN_HEADER_PARAM = "X-Authorization";
     public static final String FORM_BASED_LOGIN_ENTRY_POINT = "/auth/login";
     public static final String SEARCH_BASED_ENTRY_POINT = "/search/**";
+    public static final String OPEN_DATA = "/open/**";
     public static final String TOKEN_REFRESH_ENTRY_POINT = "/auth/token";
     public static final String TOKEN_BASED_AUTH_ENTRY_POINT = "/**";
     public static final String ROUTING_KEY_HEADER_PARAM = "Routing-Key";
@@ -83,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private JwtTokenAuthenticationProcessingFilter buildJwtTokenAuthenticationProcessingFilter() {
-        List<String> pathsToSkip = Arrays.asList(TOKEN_REFRESH_ENTRY_POINT, FORM_BASED_LOGIN_ENTRY_POINT, SEARCH_BASED_ENTRY_POINT);
+        List<String> pathsToSkip = Arrays.asList(TOKEN_REFRESH_ENTRY_POINT, FORM_BASED_LOGIN_ENTRY_POINT, SEARCH_BASED_ENTRY_POINT, OPEN_DATA);
         SkipPathRequestMatcher matcher = new SkipPathRequestMatcher(pathsToSkip, TOKEN_BASED_AUTH_ENTRY_POINT);
         JwtTokenAuthenticationProcessingFilter filter
                 = new JwtTokenAuthenticationProcessingFilter(failureHandler, tokenExtractor, matcher);
@@ -122,6 +123,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(FORM_BASED_LOGIN_ENTRY_POINT).permitAll()
                 .antMatchers(TOKEN_REFRESH_ENTRY_POINT).permitAll()
                 .antMatchers(SEARCH_BASED_ENTRY_POINT).permitAll()
+                .antMatchers(OPEN_DATA).permitAll()
                 .antMatchers(TOKEN_BASED_AUTH_ENTRY_POINT).authenticated()
                 .and()
                 .addFilterBefore(buildAjaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
