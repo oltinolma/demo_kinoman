@@ -64,7 +64,7 @@ public class GenericRequestsListener {
                     UUID id_movie = UUID.fromString(String.valueOf(message.getParams().get("id")));
                     response = objectMapper.writeValueAsString(movieService.getMovieAsObject(id_movie));
                     break;
-                case "request.movie.list.by.requested.taxonomies.for.menu":
+                case "request.open.movie.list.by.requested.taxonomies.for.menu":
                     List<String> requestListForMenu = (List<String>) message.getParams().get("taxonomies");
                     response = objectMapper.writeValueAsString(movieService.getMoviesListFromRequestedTaxonomiesForMenu(requestListForMenu));
                     break;
@@ -72,7 +72,7 @@ public class GenericRequestsListener {
                     List<String> requestedTaxonomiesList = (List<String>) message.getParams().get("taxonomies");
                     response = objectMapper.writeValueAsString(movieService.getMovieListFromRequestedTaxonomies(requestedTaxonomiesList));
                     break;
-                case "request.movie.list":
+                case "request.open.movie.list":
                     response = objectMapper.writeValueAsString(movieService.list());
                     break;
                 default:
