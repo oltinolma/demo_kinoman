@@ -22,4 +22,6 @@ public interface TaxonomyDao {
 
     List<HashMap<String, Object>>  getListByMovieId(UUID movieId);
 
+    Object getAsHierarchicalStructure(Integer id);
+
 }

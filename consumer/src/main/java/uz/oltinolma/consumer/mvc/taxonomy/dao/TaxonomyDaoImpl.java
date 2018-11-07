@@ -82,4 +82,15 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", movieId);
         return namedParameterJdbcTemplate.query(sql,parameterSource, (resultSet, i) -> TaxonomyExtractor.extractAsHashMap(resultSet));
     }
+
+    @Override
+    public Object getAsHierarchicalStructure(Integer id) {
+        String sql = "select array_to_json(array_agg(build_family)) as data from build_family(:id)";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(sql, parameterSource, resultSet -> {
+            if (resultSet.next())
+                return resultSet.getString("data");
+            else return null;
+        });
+    }
 }
