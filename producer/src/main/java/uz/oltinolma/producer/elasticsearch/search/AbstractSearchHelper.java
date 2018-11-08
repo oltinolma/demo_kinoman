@@ -41,6 +41,14 @@ public abstract class AbstractSearchHelper {
         return fuzzy;
     }
 
+    protected QueryBuilder lessFuzzyQuery(String field, String term) {
+        FuzzyQueryBuilder fuzzy = QueryBuilders.fuzzyQuery(field, term);
+        if (term.length() < 5)
+            fuzzy.fuzziness(Fuzziness.ONE);
+
+        return fuzzy;
+    }
+
 
     protected List<SearchResult> getTopTen(MultiSearchResponse response) {
         List<SearchResult> results = new ArrayList<>();
