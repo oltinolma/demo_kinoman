@@ -34,23 +34,23 @@ public class UniversalSearchHelper extends AbstractSearchHelper {
     private List<SearchResult> fuzzySearchForMovieOrTaxonomy(String term) {
         MultiSearchRequest request = new MultiSearchRequest();
         request.add(searchRequest(fuzzyQueryForMovie(term), "movie_index"));
-        request.add(searchRequest(fuzzyQuery("name", term), "taxonomy_index"));
+        request.add(searchRequest(lessFuzzyQuery("name", term), "taxonomy_index"));
         ActionFuture<MultiSearchResponse> r = client.multiSearch(request);
         return getTopTen(r.actionGet(2000));
     }
 
     private QueryBuilder matchQueryForMovie(String term) {
         QueryBuilder matchQuery = QueryBuilders.boolQuery()
-                .should(QueryBuilders.matchQuery("name", term))
-                .should(QueryBuilders.matchQuery("full_name", term));
+                .should(QueryBuilders.matchQuery("name", term).boost(2))
+                .should(QueryBuilders.matchQuery("full_name", term).boost(2));
 
         return matchQuery;
     }
 
     private QueryBuilder fuzzyQueryForMovie(String name) {
         QueryBuilder boolQuery = QueryBuilders.boolQuery()
-                .should(fuzzyQuery("name", name))
-                .should(fuzzyQuery("full_name", name));
+                .should(fuzzyQuery("name", name).boost(2))
+                .should(fuzzyQuery("full_name", name).boost(2));
 
         return boolQuery;
     }
