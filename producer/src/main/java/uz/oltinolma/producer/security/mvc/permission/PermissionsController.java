@@ -37,7 +37,7 @@ public class PermissionsController {
     @ApiOperation(value = "List of permission names for a particular user.", response = Permission.class, responseContainer = "List")
     @GetMapping(value = "/list/for/current/user", produces = "application/json")
     public Set<String> getListByLogin() {
-        return permissionServiceH2Impl.getByLogin(getLogin());
+        return permissionServiceH2Impl.getPermissionsForUser(getLogin());
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.info')")

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,6 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -70,7 +68,7 @@ class PermissionsControllerTest {
             permissionNames.add("permission.delete");
             given(userServiceH2Impl.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
             tokenForAdmin = "Bearer " + tokenHelper.normalTokenForAdmin();
-            given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissionNames);
+            given(permissionService.getPermissionsForUser(authorizedUser().getLogin())).willReturn(permissionNames);
         }
 
         private HttpHeaders headers() {

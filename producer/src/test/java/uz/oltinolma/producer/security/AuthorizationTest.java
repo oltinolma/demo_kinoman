@@ -56,7 +56,7 @@ public class AuthorizationTest {
         Set<String> permissions = new HashSet<String>();
         permissions.add("permission_1");
         permissions.add("permission_2");
-        given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissions);
+        given(permissionService.getPermissionsForUser(authorizedUser().getLogin())).willReturn(permissions);
         given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
     }
 
