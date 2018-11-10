@@ -18,5 +18,5 @@ public interface MovieService {
 
     HashMap<String, Object> getMovieAsObject(UUID id);
 
-    Object getMovieListFromRequestedTaxonomies(List<String> taxonomies);
+    Object getMovieListFromRequestedTaxonomies(String taxonomy);
 }

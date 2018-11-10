@@ -13,10 +13,7 @@ import uz.oltinolma.consumer.mvc.taxonomy.service.TaxonomyService;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class MovieDaoImpl implements MovieDao {
@@ -61,7 +58,7 @@ public class MovieDaoImpl implements MovieDao {
     public List<Object> list() {
         String sql = "select * from movies order by created_date DESC";
         List<Object> list = new ArrayList<>();
-        namedParameterJdbcTemplate.query(sql,(resultSet, i) -> {
+        namedParameterJdbcTemplate.query(sql, (resultSet, i) -> {
             list.add(getMovieAsObject((UUID) resultSet.getObject("id")));
             return null;
         });
@@ -71,7 +68,7 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     @Transactional
     public Object getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies) {
-        String sql = "select * from view_movie_taxonomy_as_array_agg t where ARRAY[:params ]::text[] <@ ARRAY[t.tag_array]::text[];";
+        String sql = "select * from view_movie_taxonomy_as_array_agg t where ARRAY[:params ]::text[] <@ ARRAY[t.tag_array]::text[]";
         SqlParameterSource parameterSource = new MapSqlParameterSource("params", taxonomies);
         List<Object> list = new ArrayList<>();
         namedParameterJdbcTemplate.query(sql, parameterSource, (resultSet, i) -> {
@@ -111,12 +108,15 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public Object getMovieListFromRequestedTaxonomies(List<String> taxonomies) {
-        String sql = "select * from calculate_movie_comparion_ratio_from_taxonomies(ARRAY[:params ]);";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("params", taxonomies);
+    public Object getMovieListFromRequestedTaxonomies(List<String> taxonomies, List<String> movieNames) {
+        String sql = "select * from calculate_movie_comparion_ratio_from_taxonomies(ARRAY[:taxonomies ] ::text[], ARRAY[:mnames ]::text[]);";
+        Map<String, Object> map = new HashMap<>();
+        map.put("taxonomies", taxonomies);
+        map.put("mnames", movieNames);
         List<Object> list = new ArrayList<>();
-        namedParameterJdbcTemplate.query(sql, parameterSource, (resultSet, i) -> {
-            if (resultSet.getLong("comparison_ratio") > 0) {
+        System.out.println(Arrays.toString(taxonomies.toArray()));
+        namedParameterJdbcTemplate.query(sql, map, (resultSet, i) -> {
+            if (resultSet.getLong("comparison_ratio") > 0 || resultSet.getBoolean("exist")) {
                 list.add(getMovieAsObject((UUID) resultSet.getObject("id")));
             }
             return null;
