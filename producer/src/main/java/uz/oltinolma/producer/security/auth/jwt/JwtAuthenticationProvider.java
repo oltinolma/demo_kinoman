@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import uz.oltinolma.producer.security.auth.JwtAuthenticationToken;
 import uz.oltinolma.producer.security.config.JwtSettings;
+import uz.oltinolma.producer.security.exceptions.JwtExpiredTokenException;
 import uz.oltinolma.producer.security.model.UserContext;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.token.RawAccessJwtToken;
@@ -41,6 +42,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         RawAccessJwtToken rawAccessToken = (RawAccessJwtToken) authentication.getCredentials();
         Jws<Claims> jwsClaims = rawAccessToken.parseClaims(jwtSettings.getTokenSigningKey());
         String login = jwsClaims.getBody().get("login", String.class);
+        if (login == null || login.isEmpty())
+            throw new JwtExpiredTokenException("Your token is expired.");
 
         Set<String> permissionNames = permissionService.getByLogin(login);
 

@@ -35,6 +35,16 @@ public abstract class AbstractSearchHelper {
         FuzzyQueryBuilder fuzzy = QueryBuilders.fuzzyQuery(field, term);
         if (term.length() <= 3)
             fuzzy.fuzziness(Fuzziness.ONE);
+        else
+            fuzzy.fuzziness(Fuzziness.TWO);
+
+        return fuzzy;
+    }
+
+    protected QueryBuilder lessFuzzyQuery(String field, String term) {
+        FuzzyQueryBuilder fuzzy = QueryBuilders.fuzzyQuery(field, term);
+        if (term.length() < 5)
+            fuzzy.fuzziness(Fuzziness.ONE);
 
         return fuzzy;
     }
@@ -49,7 +59,7 @@ public abstract class AbstractSearchHelper {
         });
 
         results.sort((searchResult1, searchResult2) -> (int) (searchResult2.getScore() - searchResult1.getScore()));
-        return results.stream().filter(sr -> sr.getTaxonomy() != null).limit(10).collect(Collectors.toList());
+        return results.stream().filter(sr -> sr.getType().equals("taxonomy") ? sr.getTaxonomy() != null : true).limit(10).collect(Collectors.toList());
     }
 
     protected List<SearchResult> getTopTen(SearchResponse response) {
@@ -57,7 +67,7 @@ public abstract class AbstractSearchHelper {
         response.getHits().iterator().forEachRemaining(hit -> results.add(new SearchResult(hit)));
 
         results.sort((searchResult1, searchResult2) -> (int) (searchResult2.getScore() - searchResult1.getScore()));
-        return results.stream().filter(sr -> sr.getTaxonomy() != null).limit(10).collect(Collectors.toList());
+        return results.stream().filter(sr -> sr.getType().equals("taxonomy") ? sr.getTaxonomy() != null : true).limit(10).collect(Collectors.toList());
     }
 
     protected String ifMultipleWordsChooseLongestOne(String term) {
