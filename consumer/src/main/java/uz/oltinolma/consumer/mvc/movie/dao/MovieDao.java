@@ -21,6 +21,6 @@ public interface MovieDao {
 
     Object getListSortedByUploadTime();
 
-    Object getMovieListFromRequestedTaxonomies(List<String> taxonomies);
+    Object getMovieListFromRequestedTaxonomies(List<String> taxonomies,List<String> movieNames);
 
 }
