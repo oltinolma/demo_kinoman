@@ -1,22 +1,19 @@
 package uz.oltinolma.consumer.mvc.movie.service;
 
-import uz.oltinolma.consumer.mvc.movie.Movie;
+import uz.oltinolma.consumer.mvc.movie.MovieWrapper;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public interface MovieService {
 
-    String movieInfoById(UUID id);
-
     void insert(String json);
 
-    List<Object> list();
+    List<MovieWrapper> list();
 
-    Object getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies);
+    List<MovieWrapper> getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies);
 
-    HashMap<String, Object> getMovieAsObject(UUID id);
+    MovieWrapper getMovieAsObject(UUID id);
 
-    Object getMovieListFromRequestedTaxonomies(String taxonomy);
+    List<MovieWrapper> getMovieListFromRequestedTaxonomies(String taxonomy);
 }
