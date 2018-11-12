@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-@RabbitListener(priority = "115", queues = "kinoman.request",
+@RabbitListener(priority = "1", queues = "kinoman.request",
         containerFactory = "directMessageListenerContainer")
 public class GenericRequestsListener {
 
