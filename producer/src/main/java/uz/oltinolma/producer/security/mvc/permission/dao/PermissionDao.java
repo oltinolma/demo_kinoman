@@ -64,11 +64,14 @@ public abstract class PermissionDao {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("id", permission.getId());
         map.put("name", permission.getName());
-        map.put("info", permission.getInfo());
-        String sql = "UPDATE permission SET name=:name,info=:info WHERE id=:id";
+        map.put("notes", permission.getNotes());
+        String sql = "UPDATE permission SET name=:name,notes=:notes WHERE id=:id";
         BaseResponse baseResponse = new BaseResponse();
         try {
-            this.getTemplate().update(sql, map);
+            int i = this.getTemplate().update(sql, map);
+            if (i == 0) {
+                throw new RuntimeException("Permission not found for the given id. ID = " + permission.getId());
+            }
         } catch (DuplicateKeyException d) {
             logger.error("Couldn't update the permission.", d);
             return baseResponses.duplicateKeyErrorResponse(permission.getName());

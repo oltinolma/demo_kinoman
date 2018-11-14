@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uz.oltinolma.producer.config.SecurityTestConfig;
+import uz.oltinolma.producer.security.config.InitH2;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 
@@ -34,6 +35,8 @@ import static uz.oltinolma.producer.security.UserDummies.authorizedUser;
 @ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthorizationTest {
+    @MockBean
+    private InitH2 initAll;
     @Autowired
     private MockMvc mockMvc;
 

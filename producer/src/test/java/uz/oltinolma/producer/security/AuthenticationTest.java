@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uz.oltinolma.producer.config.SecurityTestConfig;
+import uz.oltinolma.producer.security.config.InitH2;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 
 import static org.mockito.BDDMockito.given;
@@ -32,6 +33,8 @@ import static uz.oltinolma.producer.security.UserDummies.authorizedUser;
 public class AuthenticationTest {
     @MockBean(name = "userServiceH2Impl")
     private UserService userService;
+    @MockBean
+    private InitH2 initAll;
 
     @Autowired
     private MockMvc mockMvc;
