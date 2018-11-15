@@ -7,24 +7,16 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import uz.oltinolma.consumer.mvc.movie.Movie;
-import uz.oltinolma.consumer.mvc.taxonomy.service.TaxonomyService;
+import uz.oltinolma.consumer.mvc.movie.MovieWrapper;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class MovieDaoImpl implements MovieDao {
 
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    @Autowired
-    private TaxonomyService taxonomyService;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -47,92 +39,38 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public Object info(UUID id) {
-        String sql = "select get_json_from_movie_id from get_json_from_movie_id(:id)";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.query(sql, parameterSource, resultSet -> {
-            if (resultSet.next())
-                return resultSet.getString("get_json_from_movie_id");
-            else return null;
-        });
-    }
-
-    @Override
-    public List<Object> list() {
-        String sql = "select * from movies order by created_date DESC";
-        List<Object> list = new ArrayList<>();
-        namedParameterJdbcTemplate.query(sql,(resultSet, i) -> {
-            list.add(getMovieAsObject((UUID) resultSet.getObject("id")));
-            return null;
-        });
-        return list;
+    public List<MovieWrapper> list() {
+        String sql = "SELECT * FROM view_movie_list_with_full_info order by created_date DESC";
+        return namedParameterJdbcTemplate.query(sql, (resultSet, i) -> MovieWrapperExtractor.extract(resultSet));
     }
 
     @Override
     @Transactional
-    public Object getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies) {
-        String sql = "select * from view_movie_taxonomy_as_array_agg t where ARRAY[:params ]::text[] <@ ARRAY[t.tag_array]::text[];";
+    public List<MovieWrapper> getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies) {
+        String sql = "select * from view_movie_taxonomy_as_array_agg t where ARRAY[:params ]::text[] <@ ARRAY[t.tag_array]::text[]";
         SqlParameterSource parameterSource = new MapSqlParameterSource("params", taxonomies);
-        List<Object> list = new ArrayList<>();
-        namedParameterJdbcTemplate.query(sql, parameterSource, (resultSet, i) -> {
-            list.add(getMovieAsObject((UUID) resultSet.getObject("id")));
-            return null;
-        });
-        return list;
+        return namedParameterJdbcTemplate.query(sql, parameterSource, (resultSet, i) -> MovieWrapperExtractor.extract(resultSet));
     }
 
     @Override
-    public Object getMovieAsObject(UUID id) {
-        String sql = "select * from movies where id=:id";
+    public MovieWrapper getMovieAsObject(UUID id) {
+        String sql = "SELECT * FROM view_movie_list_with_full_info where id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
-        Movie movie = namedParameterJdbcTemplate.query(sql, parameterSource, resultSet -> {
-            if (resultSet.next()) {
-                return MovieExtractor.extract(resultSet);
-            }
-            return null;
-        });
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("movie", movie);
-        map.put("file", getFile(id));
-        map.put("taxonomy", taxonomyService.getListByMovieId(id));
-        return map;
+        return namedParameterJdbcTemplate.query(sql, parameterSource, MovieWrapperExtractor::extract);
     }
 
     @Override
-    public Object getListSortedByUploadTime() {
-        String sql = "select * from movies";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("params", null);
-        List<Object> list = new ArrayList<>();
-        namedParameterJdbcTemplate.query(sql, parameterSource, (resultSet, i) -> {
-            list.add(getMovieAsObject((UUID) resultSet.getObject("id")));
-            return null;
-        });
-        return list;
-    }
-
-    @Override
-    public Object getMovieListFromRequestedTaxonomies(List<String> taxonomies) {
-        String sql = "select * from calculate_movie_comparion_ratio_from_taxonomies(ARRAY[:params ]);";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("params", taxonomies);
-        List<Object> list = new ArrayList<>();
-        namedParameterJdbcTemplate.query(sql, parameterSource, (resultSet, i) -> {
-            if (resultSet.getLong("comparison_ratio") > 0) {
-                list.add(getMovieAsObject((UUID) resultSet.getObject("id")));
+    public List<MovieWrapper> getMovieListFromRequestedTaxonomies(List<String> taxonomies, List<String> movieNames) {
+        String sql = "select * from calculate_movie_comparion_ratio_from_taxonomies(ARRAY[:taxonomies ] ::text[], ARRAY[:mnames ]::text[]);";
+        Map<String, Object> map = new HashMap<>();
+        map.put("taxonomies", taxonomies);
+        map.put("mnames", movieNames);
+        return namedParameterJdbcTemplate.query(sql, map, (resultSet, i) -> {
+            if (resultSet.getLong("comparison_ratio") > 0 || resultSet.getBoolean("exist")) {
+                return (getMovieAsObject((UUID) resultSet.getObject("id")));
             }
             return null;
         });
-        return list;
     }
 
-    private String getFile(UUID id) {
-        String sql = "select * from files where id_movie=:id";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.query(sql, parameterSource, resultSet -> {
-            if (resultSet.next()) {
-                return resultSet.getString("standart_absolute_path");
-            }
-            return null;
-        });
-
-    }
 }

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-@RabbitListener(priority = "110", queues = "kinoman.request",
+@RabbitListener(priority = "2", queues = "kinoman.request",
         containerFactory = "directMessageListenerContainer")
 public class GenericRequestsListener {
 
@@ -68,8 +68,8 @@ public class GenericRequestsListener {
                     List<String> requestListForMenu = (List<String>) message.getParams().get("taxonomies");
                     response = objectMapper.writeValueAsString(movieService.getMoviesListFromRequestedTaxonomiesForMenu(requestListForMenu));
                     break;
-                case "request.movie.list.by.requested.taxonomies":
-                    List<String> requestedTaxonomiesList = (List<String>) message.getParams().get("taxonomies");
+                case "request.open.global.search.movie.with.term":
+                    String requestedTaxonomiesList = (String) message.getParams().get("term");
                     response = objectMapper.writeValueAsString(movieService.getMovieListFromRequestedTaxonomies(requestedTaxonomiesList));
                     break;
                 case "request.open.movie.list":
