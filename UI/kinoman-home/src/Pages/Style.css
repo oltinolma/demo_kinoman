@@ -1,0 +1,29 @@
+.container {
+    width: 500px;
+    margin: auto;
+}
+.loginHeading {
+    text-align: center;
+    color: darkslategray;
+}
+.loginBox {
+    height: 100vh;
+    width: 100%;
+}
+.loginBox form {
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px #ccc;
+}
+.backLink {
+    margin-top: 10px;
+    text-align: center;
+}
+.nothing-found {
+    text-align: center;
+    padding: 100px;
+    font-size: 20px;
+}
+.nothing-found span {
+    font-size: 14px;
+    color: #999;
+}
