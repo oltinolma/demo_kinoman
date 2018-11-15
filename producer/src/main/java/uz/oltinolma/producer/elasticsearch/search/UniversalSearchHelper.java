@@ -13,10 +13,11 @@ import java.util.List;
 public class UniversalSearchHelper extends AbstractSearchHelper {
     public List<SearchResult> searchForMovieOrTaxonomy(String term) {
         List<SearchResult> results = ngramMatchSearchForMovieOrTaxonomy(term);
-
+        System.out.println("ngram " + results);
         if (results.isEmpty()) {
             term = ifMultipleWordsChooseLongestOne(term);
             results = fuzzySearchForMovieOrTaxonomy(term);
+            System.out.println("fuzzy " + results);
         }
 
         return results;
@@ -33,23 +34,23 @@ public class UniversalSearchHelper extends AbstractSearchHelper {
     private List<SearchResult> fuzzySearchForMovieOrTaxonomy(String term) {
         MultiSearchRequest request = new MultiSearchRequest();
         request.add(searchRequest(fuzzyQueryForMovie(term), "movie_index"));
-        request.add(searchRequest(fuzzyQuery("name", term), "taxonomy_index"));
+        request.add(searchRequest(lessFuzzyQuery("name", term), "taxonomy_index"));
         ActionFuture<MultiSearchResponse> r = client.multiSearch(request);
         return getTopTen(r.actionGet(2000));
     }
 
-    private QueryBuilder matchQueryForMovie(String name) {
+    private QueryBuilder matchQueryForMovie(String term) {
         QueryBuilder matchQuery = QueryBuilders.boolQuery()
-                .should(QueryBuilders.matchQuery("name", name))
-                .should(QueryBuilders.matchQuery("full_name", name));
+                .should(QueryBuilders.matchQuery("name", term).boost(2))
+                .should(QueryBuilders.matchQuery("full_name", term).boost(2));
 
         return matchQuery;
     }
 
     private QueryBuilder fuzzyQueryForMovie(String name) {
         QueryBuilder boolQuery = QueryBuilders.boolQuery()
-                .should(QueryBuilders.fuzzyQuery("name", name))
-                .should(QueryBuilders.fuzzyQuery("full_name", name));
+                .should(fuzzyQuery("name", name).boost(2))
+                .should(fuzzyQuery("full_name", name).boost(2));
 
         return boolQuery;
     }

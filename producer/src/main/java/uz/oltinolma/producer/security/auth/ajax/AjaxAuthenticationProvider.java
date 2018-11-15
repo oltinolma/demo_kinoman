@@ -5,26 +5,20 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.security.model.UserContext;
+import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.User;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
-import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
-import uz.oltinolma.producer.security.model.UserContext;
 
 import java.util.ArrayList;
-import java.util.List;
 @Component
 @Lazy
 public class AjaxAuthenticationProvider implements AuthenticationProvider {
@@ -57,10 +51,8 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
         validateEmployee(employee);
         validatePassword(login, password, employee.getPassword());
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(employee.getRole()));
-        UserContext userContext = UserContext.create(employee.getLogin(), authorities, permissionService.getByLogin(login));
-        return new UsernamePasswordAuthenticationToken(userContext, null, userContext.getAuthorities());
+        UserContext userContext = UserContext.create(employee.getLogin(), permissionService.getPermissionsForUser(login));
+        return new UsernamePasswordAuthenticationToken(userContext, null, new ArrayList<>());
     }
 
     private void validatePassword(String login, String password, String expectedPw) {
@@ -76,13 +68,13 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
     private void validateEmployee(User user) {
         if (user == null)
-            throw new UsernameNotFoundException("Login yoki parol xato!");
+            throw new UsernameNotFoundException("Incorrect username or password.");
 
         if (!user.isEnable())
-            throw new UsernameNotFoundException("Siz uchun kirish yopilgan!");
+            throw new UsernameNotFoundException("Your profile is not active. Please contact the administrator.");
 
-        if (user.getRole().isEmpty())
-            throw new InsufficientAuthenticationException("Foydalanuvchini huquqlar yo'q");
+        if (user.getRole() == null || user.getRole().isEmpty())
+            throw new InsufficientAuthenticationException("You don't have any permission.");
     }
 
     @Override

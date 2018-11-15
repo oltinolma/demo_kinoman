@@ -38,7 +38,7 @@ public class PermissionDaoH2Impl extends PermissionDao {
             Map<String, Object> map = new HashMap<>();
             map.put("id", permission.getId());
             map.put("name", permission.getName());
-            map.put("notes", permission.getInfo());
+            map.put("notes", permission.getNotes());
             batch[i] = map;
         }
         try {
@@ -54,7 +54,7 @@ public class PermissionDaoH2Impl extends PermissionDao {
         Map<String, Object> map = new HashMap<>();
         map.put("id", permissions.getId());
         map.put("name", permissions.getName());
-        map.put("notes", permissions.getInfo());
+        map.put("notes", permissions.getNotes());
         String sql = "INSERT INTO permission(id, name,notes) VALUES (:id,:name,:notes)";
 
         return this.getTemplate().update(sql, map);

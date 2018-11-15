@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uz.oltinolma.producer.config.SecurityTestConfig;
+import uz.oltinolma.producer.security.config.InitH2;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
 
@@ -33,7 +34,9 @@ import static uz.oltinolma.producer.security.UserDummies.authorizedUser;
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SecurityPermissionsTest {
+public class AuthorizationTest {
+    @MockBean
+    private InitH2 initAll;
     @Autowired
     private MockMvc mockMvc;
 
@@ -43,19 +46,21 @@ public class SecurityPermissionsTest {
     @MockBean(name = "permissionServiceH2Impl")
     private PermissionService permissionService;
 
-    @Autowired
     private SecurityTestConfig.TokenHelper
             tokenHelper;
 
+    @Autowired
+    public void setTokenHelper(SecurityTestConfig.TokenHelper tokenHelper) {
+        this.tokenHelper = tokenHelper;
+    }
 
     @BeforeEach
     public void setup() {
         Set<String> permissions = new HashSet<String>();
         permissions.add("permission_1");
         permissions.add("permission_2");
-        given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissions);
+        given(permissionService.getPermissionsForUser(authorizedUser().getLogin())).willReturn(permissions);
         given(userService.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
-        tokenHelper.setUserService(userService);
     }
 
     @Test
@@ -107,7 +112,6 @@ public class SecurityPermissionsTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "Bearer " + tokenHelper.expiredToken());
         headers.set("Content-Type", "application/json");
-        headers.set("Routing-Key", "someRoutingKey");
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andDo(print())
                 .andExpect(status().is(401))
@@ -120,7 +124,6 @@ public class SecurityPermissionsTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Authorization", "Bearer " + tokenHelper.normalTokenForAdmin());
         headers.set("Content-Type", "application/json");
-        headers.set("Routing-Key", "permission_1");
 
         mockMvc.perform(post("/anyUrl").headers(headers))
                 .andExpect(status().is(404));

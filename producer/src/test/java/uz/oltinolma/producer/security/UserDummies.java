@@ -25,13 +25,13 @@ public class UserDummies {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(authorizedUser().getRole()));
 
-        return UserContext.create(authorizedUser().getLogin(), authorities, null);
+        return UserContext.create(authorizedUser().getLogin(), null);
     }
 
     public static UserContext userContextForGuest() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(guestUser().getRole()));
 
-        return UserContext.create(guestUser().getLogin(), authorities, null);
+        return UserContext.create(guestUser().getLogin(), null);
     }
 }

@@ -6,13 +6,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import uz.oltinolma.consumer.mvc.movie.dao.MovieDao;
-import uz.oltinolma.consumer.mvc.movie.Movie;
+import org.springframework.transaction.annotation.Transactional;
+import uz.oltinolma.consumer.mvc.movie.MovieWrapper;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class MovieDaoImpl implements MovieDao {
@@ -40,29 +39,38 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public Object info(UUID id) {
-        String sql = "select get_json_from_movie_id from get_json_from_movie_id(:id)";
-        SqlParameterSource parameterSource = new MapSqlParameterSource("id",id);
-        return namedParameterJdbcTemplate.query(sql, parameterSource,resultSet -> {
-            if(resultSet.next())
-                return resultSet.getString("get_json_from_movie_id");
-            else return null;
-        });
+    public List<MovieWrapper> list() {
+        String sql = "SELECT * FROM view_movie_list_with_full_info order by created_date DESC";
+        return namedParameterJdbcTemplate.query(sql, (resultSet, i) -> MovieWrapperExtractor.extract(resultSet));
     }
 
     @Override
-    public List<Movie> list() {
-        String sql = "select * from movies";
-        return namedParameterJdbcTemplate.query(sql, (rs,i)-> {
-            Movie m = new Movie();
-            m.setId((UUID) rs.getObject("id"));
-            m.setName(rs.getString("name"));
-            m.setCreatedDate(rs.getLong("created_date"));
-            m.setReleasedDate(rs.getDate("release_date"));
-            m.setFullName(rs.getString("full_name"));
-            m.setAgeRating(rs.getString("age_rating"));
-            m.setDescription(rs.getString("description"));
-            return m;
+    @Transactional
+    public List<MovieWrapper> getMoviesListFromRequestedTaxonomiesForMenu(List<String> taxonomies) {
+        String sql = "select * from view_movie_taxonomy_as_array_agg t where ARRAY[:params ]::text[] <@ ARRAY[t.tag_array]::text[]";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("params", taxonomies);
+        return namedParameterJdbcTemplate.query(sql, parameterSource, (resultSet, i) -> MovieWrapperExtractor.extract(resultSet));
+    }
+
+    @Override
+    public MovieWrapper getMovieAsObject(UUID id) {
+        String sql = "SELECT * FROM view_movie_list_with_full_info where id=:id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(sql, parameterSource, MovieWrapperExtractor::extract);
+    }
+
+    @Override
+    public List<MovieWrapper> getMovieListFromRequestedTaxonomies(List<String> taxonomies, List<String> movieNames) {
+        String sql = "select * from calculate_movie_comparion_ratio_from_taxonomies(ARRAY[:taxonomies ] ::text[], ARRAY[:mnames ]::text[]);";
+        Map<String, Object> map = new HashMap<>();
+        map.put("taxonomies", taxonomies);
+        map.put("mnames", movieNames);
+        return namedParameterJdbcTemplate.query(sql, map, (resultSet, i) -> {
+            if (resultSet.getLong("comparison_ratio") > 0 || resultSet.getBoolean("exist")) {
+                return (getMovieAsObject((UUID) resultSet.getObject("id")));
+            }
+            return null;
         });
     }
+
 }

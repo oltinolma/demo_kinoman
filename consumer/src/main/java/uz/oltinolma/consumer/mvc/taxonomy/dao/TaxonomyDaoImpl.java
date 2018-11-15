@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Repository
 public class TaxonomyDaoImpl implements TaxonomyDao {
@@ -70,6 +71,25 @@ public class TaxonomyDaoImpl implements TaxonomyDao {
         return namedParameterJdbcTemplate.query(sql, resultSet -> {
             if(resultSet.next())
             return resultSet.getString("x");
+            else return null;
+        });
+    }
+
+    @Override
+    public List<HashMap<String, Object>> getListByMovieId(UUID movieId) {
+        String sql = "SELECT taxonomy_name, parent_name, movie_id, movie_created_date, movie_release_date "+
+                "FROM view_movie_taxonomy_with_base_parent where movie_id =:id";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", movieId);
+        return namedParameterJdbcTemplate.query(sql,parameterSource, (resultSet, i) -> TaxonomyExtractor.extractAsHashMap(resultSet));
+    }
+
+    @Override
+    public Object getAsHierarchicalStructure(Integer id) {
+        String sql = "select array_to_json(array_agg(build_family)) as data from build_family(:id)";
+        SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(sql, parameterSource, resultSet -> {
+            if (resultSet.next())
+                return resultSet.getString("data");
             else return null;
         });
     }

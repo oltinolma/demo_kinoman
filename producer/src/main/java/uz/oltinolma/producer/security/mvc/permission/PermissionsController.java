@@ -37,20 +37,20 @@ public class PermissionsController {
     @ApiOperation(value = "List of permission names for a particular user.", response = Permission.class, responseContainer = "List")
     @GetMapping(value = "/list/for/current/user", produces = "application/json")
     public Set<String> getListByLogin() {
-        return permissionServiceH2Impl.getByLogin(getLogin());
+        return permissionServiceH2Impl.getPermissionsForUser(getLogin());
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.info')")
-    @ApiOperation(value = "Ma'lum ID lik ruxsatni olish", response = Permission.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
-    public Permission get(@PathVariable int id) {
+    @ApiOperation(value = "Get permission object by id", response = Permission.class)
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public Permission getById(@PathVariable int id) {
         return permissionServiceH2Impl.get(id);
     }
 
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.update')")
-    @ApiOperation(value = "Ma'lum ID lik ruxsatni tahrirlash", response = BaseResponse.class)
-    @RequestMapping(method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @ApiOperation(value = "Edit permission.", response = BaseResponse.class)
+    @PutMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse update(@Validated @RequestBody Permission permissions) {
         return permissionServicePostgresImpl.update(permissions);
     }

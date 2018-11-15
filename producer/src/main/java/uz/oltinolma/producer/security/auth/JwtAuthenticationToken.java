@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import uz.oltinolma.producer.security.model.UserContext;
 import uz.oltinolma.producer.security.token.RawAccessJwtToken;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
@@ -19,8 +20,8 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         this.setAuthenticated(false);
     }
 
-    public JwtAuthenticationToken(UserContext userContext, Collection<? extends GrantedAuthority> authorities) {
-        super(authorities);
+    public JwtAuthenticationToken(UserContext userContext) {
+        super(new ArrayList<>());
         this.eraseCredentials();
         this.userContext = userContext;
         super.setAuthenticated(true);

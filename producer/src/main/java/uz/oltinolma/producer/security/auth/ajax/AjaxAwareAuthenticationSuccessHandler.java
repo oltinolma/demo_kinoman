@@ -33,19 +33,21 @@ public class AjaxAwareAuthenticationSuccessHandler implements AuthenticationSucc
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+                                        Authentication authentication) throws IOException {
         UserContext userContext = (UserContext) authentication.getPrincipal();
-        
-        JwtToken accessToken = tokenFactory.createAccessJwtToken(userContext);
-
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("token", accessToken.getToken());
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        mapper.writeValue(response.getWriter(), tokenMap);
+        giveTokenToUser(response, userContext);
 
         clearAuthenticationAttributes(request);
     }
+
+    private void giveTokenToUser(HttpServletResponse response, UserContext userContext) throws IOException {
+        Map<String, String> body = new HashMap<>();
+        body.put("token", tokenFactory.createAccessJwtToken(userContext).getToken());
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        mapper.writeValue(response.getWriter(), body);
+    }
+
     protected final void clearAuthenticationAttributes(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 

@@ -60,18 +60,21 @@ public abstract class PermissionDao {
 
     public abstract int insert(Permission permissions);
 
-    public BaseResponse update(Permission permissions) {
+    public BaseResponse update(Permission permission) {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", permissions.getId());
-        map.put("name", permissions.getName());
-        map.put("info", permissions.getInfo());
-        String sql = "UPDATE permission SET name=:name,info=:info WHERE id=:id";
+        map.put("id", permission.getId());
+        map.put("name", permission.getName());
+        map.put("notes", permission.getNotes());
+        String sql = "UPDATE permission SET name=:name, notes=:notes WHERE id=:id";
         BaseResponse baseResponse = new BaseResponse();
         try {
-            this.getTemplate().update(sql, map);
+            int i = this.getTemplate().update(sql, map);
+            if (i == 0) {
+                throw new RuntimeException("Permission not found for the given id. ID = " + permission.getId());
+            }
         } catch (DuplicateKeyException d) {
             logger.error("Couldn't update the permission.", d);
-            return baseResponses.duplicateKeyErrorResponse(permissions.getName());
+            return baseResponses.duplicateKeyErrorResponse(permission.getName());
         } catch (Exception e) {
             logger.error("Couldn't update the permission.", e);
             return baseResponses.serverErrorResponse();
@@ -91,5 +94,9 @@ public abstract class PermissionDao {
             return baseResponses.serverErrorResponse();
         }
         return baseResponse;
+    }
+
+    public void deleteAll() {
+        this.getTemplate().update("delete from permission", new HashMap<>());
     }
 }
