@@ -65,7 +65,7 @@ public abstract class PermissionDao {
         map.put("id", permission.getId());
         map.put("name", permission.getName());
         map.put("notes", permission.getNotes());
-        String sql = "UPDATE permission SET name=:name,notes=:notes WHERE id=:id";
+        String sql = "UPDATE permission SET name=:name, notes=:notes WHERE id=:id";
         BaseResponse baseResponse = new BaseResponse();
         try {
             int i = this.getTemplate().update(sql, map);
@@ -94,5 +94,9 @@ public abstract class PermissionDao {
             return baseResponses.serverErrorResponse();
         }
         return baseResponse;
+    }
+
+    public void deleteAll() {
+        this.getTemplate().update("delete from permission", new HashMap<>());
     }
 }

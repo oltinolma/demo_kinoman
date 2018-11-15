@@ -31,4 +31,13 @@ public class Permission {
         this.notes = notes;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Permission{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", notes='" + notes + '\'' +
+                '}';
+    }
 }

@@ -33,4 +33,8 @@ public abstract class PermissionService {
     public abstract BaseResponse update(Permission permissions);
 
     public abstract BaseResponse delete(int id);
+
+    public void deleteAll() {
+        getPermissionDao().deleteAll();
+    }
 }

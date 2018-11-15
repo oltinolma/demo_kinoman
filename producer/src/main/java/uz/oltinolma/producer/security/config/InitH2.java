@@ -58,4 +58,5 @@ public class InitH2 {
     private void initPermissions() {
         permissionServiceH2Impl.insertAll(permissionServicePostgresImpl.list());
     }
+
 }

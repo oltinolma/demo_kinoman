@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS permission;
 CREATE TABLE permission
 (
   id serial PRIMARY KEY,
