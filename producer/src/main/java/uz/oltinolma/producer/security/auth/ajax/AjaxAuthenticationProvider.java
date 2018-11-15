@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -54,9 +51,7 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
         validateEmployee(employee);
         validatePassword(login, password, employee.getPassword());
 
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(employee.getRole()));
-        UserContext userContext = UserContext.create(employee.getLogin(), permissionService.getByLogin(login));
+        UserContext userContext = UserContext.create(employee.getLogin(), permissionService.getPermissionsForUser(login));
         return new UsernamePasswordAuthenticationToken(userContext, null, new ArrayList<>());
     }
 
@@ -73,13 +68,13 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
     private void validateEmployee(User user) {
         if (user == null)
-            throw new UsernameNotFoundException("Login yoki parol xato!");
+            throw new UsernameNotFoundException("Incorrect username or password.");
 
         if (!user.isEnable())
-            throw new UsernameNotFoundException("Siz uchun kirish yopilgan!");
+            throw new UsernameNotFoundException("Your profile is not active. Please contact the administrator.");
 
-        if (user.getRole().isEmpty())
-            throw new InsufficientAuthenticationException("Foydalanuvchini huquqlar yo'q");
+        if (user.getRole() == null || user.getRole().isEmpty())
+            throw new InsufficientAuthenticationException("You don't have any permission.");
     }
 
     @Override

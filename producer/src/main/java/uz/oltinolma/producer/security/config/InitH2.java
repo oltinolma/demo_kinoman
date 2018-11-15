@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 
 @Component
 @ExcludeFromTests
-public class InitAll {
+public class InitH2 {
     private static final Logger logger = LogUtil.getInstance();
     @Autowired
     private PermissionService permissionServicePostgresImpl;
@@ -35,11 +35,28 @@ public class InitAll {
     private UserService userServiceH2Impl;
 
     @PostConstruct
-    public void initH2() {
-        permissionServiceH2Impl.insertAll(permissionServicePostgresImpl.list());
-        roleServiceH2Impl.insertAll(roleServicePostgresImpl.list());
-        rolesPermissionsServiceH2Impl.insertAll(rolesPermissionsServicePostgresImpl.list());
-        userServiceH2Impl.insertAll(userServicePostgresImpl.list());
+    public void initAll() {
+        initPermissions();
+        initRoles();
+        initRolePermissions();
+        initUsers();
         logger.info("H2 initialization completed successfully");
     }
+
+    private void initUsers() {
+        userServiceH2Impl.insertAll(userServicePostgresImpl.list());
+    }
+
+    private void initRolePermissions() {
+        rolesPermissionsServiceH2Impl.insertAll(rolesPermissionsServicePostgresImpl.list());
+    }
+
+    private void initRoles() {
+        roleServiceH2Impl.insertAll(roleServicePostgresImpl.list());
+    }
+
+    private void initPermissions() {
+        permissionServiceH2Impl.insertAll(permissionServicePostgresImpl.list());
+    }
+
 }

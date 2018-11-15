@@ -32,7 +32,7 @@ public class PermissionDaoPostgresImpl extends PermissionDao {
     public int insert(Permission permissions) {
         Map<String, Object> map = new HashMap<>();
         map.put("name", permissions.getName());
-        map.put("notes", permissions.getInfo());
+        map.put("notes", permissions.getNotes());
 
         return insertPermission.executeAndReturnKey(map).intValue();
     }

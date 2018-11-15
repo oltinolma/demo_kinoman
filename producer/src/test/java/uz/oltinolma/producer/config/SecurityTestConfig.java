@@ -2,12 +2,8 @@ package uz.oltinolma.producer.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import uz.oltinolma.producer.security.common.ExcludeFromTests;
-import uz.oltinolma.producer.security.mvc.user.service.UserService;
 import uz.oltinolma.producer.security.token.JwtTokenFactory;
 
 import java.sql.Date;
@@ -37,6 +33,7 @@ public class SecurityTestConfig {
         public String normalTokenForAdmin() {
             return tokenFactory.createAccessJwtToken(userContextForAdmin()).getToken();
         }
+
 
         public String normalTokenForGuest() {
             return tokenFactory.createAccessJwtToken(userContextForGuest()).getToken();

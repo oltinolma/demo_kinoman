@@ -8,12 +8,15 @@ import org.mockito.InOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uz.oltinolma.producer.config.SecurityTestConfig;
+import uz.oltinolma.producer.security.config.InitH2;
 import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDao;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.service.UserService;
@@ -24,7 +27,9 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -37,11 +42,14 @@ import static uz.oltinolma.producer.security.UserDummies.guestUser;
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "test-security-profile"})
 @TestInstance(Lifecycle.PER_CLASS)
+@Sql({"/permission.sql"})
 class PermissionsControllerTest {
+    @MockBean
+    private InitH2 excludedBean;
     @Autowired
     private SecurityTestConfig.TokenHelper tokenHelper;
     @SpyBean(name = "permissionServiceH2Impl")
-    private PermissionService permissionService;
+    private PermissionService serviceH2ImplSpy;
     @SpyBean(name = "userServiceH2Impl")
     private UserService userServiceH2Impl;
     private PermissionDummies permissionDummies;
@@ -50,10 +58,6 @@ class PermissionsControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
-    @SpyBean(name = "permissionDaoH2Impl")
-    private PermissionDao permissionDaoH2Impl;
-//    @SpyBean(name = "permissionDaoPostgesImpl")
-//    private PermissionDao permissionDaoPostgesImpl;
 
     @Nested
     @DisplayName("when authorized")
@@ -68,9 +72,9 @@ class PermissionsControllerTest {
             permissionNames.add("permission.update");
             permissionNames.add("permission.insert");
             permissionNames.add("permission.delete");
+            given(serviceH2ImplSpy.getPermissionsForUser(authorizedUser().getLogin())).willReturn(permissionNames);
             given(userServiceH2Impl.findByLogin(authorizedUser().getLogin())).willReturn(authorizedUser());
             tokenForAdmin = "Bearer " + tokenHelper.normalTokenForAdmin();
-            given(permissionService.getByLogin(authorizedUser().getLogin())).willReturn(permissionNames);
         }
 
         private HttpHeaders headers() {
@@ -82,41 +86,74 @@ class PermissionsControllerTest {
 
         @Nested
         @DisplayName("and updates data")
+        @SpringBootTest(classes = SecurityTestConfig.class)
+        @AutoConfigureMockMvc
+        @ActiveProfiles({"test", "test-security-profile"})
+        @TestInstance(Lifecycle.PER_CLASS)
+        @Sql(value = "/permission.sql")
         class UpdateTests {
-
-            UpdateTests() {
-
-            }
+            @SpyBean(name = "permissionServicePostgresImpl")
+            private PermissionService servicePostgresImplSpy;
+            @SpyBean(name = "permissionDaoPostgresImpl")
+            private PermissionDao DaoPostgresImplSpy;
+            @SpyBean(name = "permissionDaoH2Impl")
+            private PermissionDao DaoH2ImplSpy;
+            @MockBean
+            private InitH2 excludedBean;
+            @Autowired
+            private MockMvc mockMvc;
+            @SpyBean(name = "permissionServiceH2Impl")
+            private PermissionService serviceH2ImplSpy;
+            @SpyBean
+            private PermissionsController controllerSpy;
 
             @BeforeEach
-            void setup() {
+            void setup(){
+                given(serviceH2ImplSpy.getPermissionsForUser(authorizedUser().getLogin())).willReturn(permissionNames);
+                serviceH2ImplSpy.deleteAll();
+                serviceH2ImplSpy.insertAll(servicePostgresImplSpy.list());
             }
 
             @Test
-            void temp() {
-//                permissionDaoH2Impl.update(new Permission());
-//                verify(permissionService).update(any(Permission.class));
-//                InOrder orderVerifier = inOrder(permissionDaoH2Impl,
-//                        permissionDaoPgImpl,
-//                        userServicePgImpl,
-//                        userServiceH2Impl);
-//
-//                orderVerifier.verify(userServiceH2Impl).update(any());
-//                orderVerifier.verify(userServicePgImpl).update(any());
-//                orderVerifier.verify(permissionDaoH2Impl).update(any());
-//                orderVerifier.verify(permissionDaoPgImpl).update(any());
+            @DisplayName("Structure of update is ok.")
+            void updateStructure() throws Exception {
+                InOrder orderVerifier = inOrder(serviceH2ImplSpy,servicePostgresImplSpy,
+                        DaoH2ImplSpy,DaoPostgresImplSpy, controllerSpy);
+
+                Permission per = new Permission().setId(1).setName("updated permission name").setNotes("dfdfdfd");
+                mockMvc.perform(put("/permissions")
+                        .content(mapper.writeValueAsString(per))
+                        .headers(headers())).andExpect(status().isOk());
+
+
+                orderVerifier.verify(controllerSpy).update(any());
+                orderVerifier.verify(servicePostgresImplSpy).update(any());
+                orderVerifier.verify(serviceH2ImplSpy).update(any());
+                orderVerifier.verify(DaoH2ImplSpy).update(any());
+                orderVerifier.verify(DaoPostgresImplSpy).update(any());
+
+                serviceH2ImplSpy.list().forEach(p-> System.out.println("h2 " + p));
+                System.out.println("servicePostgresImplSpy");
+                servicePostgresImplSpy.list().forEach(p-> System.out.println("pg " + p));
             }
 
-
+            @Test
+            @DisplayName("PUT request updates given permission.")
+            public void temp() {
+                System.out.println("serviceH2ImplSpy");
+                serviceH2ImplSpy.list().forEach(p-> System.out.println("h2 " + p));
+                System.out.println("servicePostgresImplSpy");
+                servicePostgresImplSpy.list().forEach(p-> System.out.println("pg " + p));
+            }
         }
 
         @Nested
         @DisplayName("and only reads data")
         class ReadTests {
             ReadTests() {
-                given(permissionService.list()).willReturn(permissionDummies.getAll());
+                given(serviceH2ImplSpy.list()).willReturn(permissionDummies.getAll());
                 for (Permission p : permissionDummies.getAll()) {
-                    given(permissionService.get(p.getId())).willReturn(p);
+                    given(serviceH2ImplSpy.get(p.getId())).willReturn(p);
                 }
             }
 
@@ -148,7 +185,7 @@ class PermissionsControllerTest {
                             .andExpect(status().isOk())
                             .andExpect(jsonPath("id").value(p.getId()))
                             .andExpect(jsonPath("name").value(p.getName()))
-                            .andExpect(jsonPath("info").value(p.getInfo()));
+                            .andExpect(jsonPath("notes").value(p.getNotes()));
             }
         }
     }
@@ -161,7 +198,6 @@ class PermissionsControllerTest {
         WhenUnauthorized() {
             permissionDummies = new PermissionDummies();
             given(userServiceH2Impl.findByLogin(guestUser().getLogin())).willReturn(guestUser());
-//            tokenHelper.setUserService(userServiceH2Impl);
             tokenForGuest = "Bearer " + tokenHelper.normalTokenForGuest();
         }
 

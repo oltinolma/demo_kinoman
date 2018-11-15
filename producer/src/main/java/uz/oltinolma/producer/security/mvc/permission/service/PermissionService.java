@@ -11,7 +11,7 @@ import java.util.Set;
 public abstract class PermissionService {
     public abstract PermissionDao getPermissionDao();
     public abstract void setPermissionDao(PermissionDao permissionDao);
-    public Set<String> getByLogin(String login) {
+    public Set<String> getPermissionsForUser(String login) {
         return getPermissionDao().getByLogin(login);
     }
 
@@ -33,4 +33,8 @@ public abstract class PermissionService {
     public abstract BaseResponse update(Permission permissions);
 
     public abstract BaseResponse delete(int id);
+
+    public void deleteAll() {
+        getPermissionDao().deleteAll();
+    }
 }
