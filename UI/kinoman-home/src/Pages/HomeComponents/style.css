@@ -1,0 +1,7 @@
+.movieCard {
+    margin-bottom: 20px !important;
+}
+.no-border {
+    border: none;
+    outline: none;
+}

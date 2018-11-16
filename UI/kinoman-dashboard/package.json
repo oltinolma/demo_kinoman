@@ -1,0 +1,28 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "faker": "^4.1.0",
+    "filepond-plugin-file-validate-type": "^1.2.0",
+    "filepond-plugin-image-crop": "^2.0.0",
+    "filepond-plugin-image-preview": "^3.0.0",
+    "lodash": "^4.17.11",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-filepond": "^4.0.0",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.5",
+    "react-tag-input": "^6.0.2",
+    "semantic-ui-calendar-react": "^0.10.0",
+    "semantic-ui-react": "^0.82.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
