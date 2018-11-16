@@ -6,8 +6,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import uz.oltinolma.producer.security.common.BaseResponses;
-import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.common.BaseResponses;
+import uz.oltinolma.producer.common.LogUtil;
 import uz.oltinolma.producer.security.mvc.user.User;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 

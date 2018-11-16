@@ -1,4 +1,4 @@
-package uz.oltinolma.producer.security.common;
+package uz.oltinolma.producer.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

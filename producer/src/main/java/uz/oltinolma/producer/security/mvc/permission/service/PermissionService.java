@@ -1,7 +1,6 @@
 package uz.oltinolma.producer.security.mvc.permission.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.permission.Permission;
 import uz.oltinolma.producer.security.mvc.permission.dao.PermissionDao;
 
@@ -26,13 +25,13 @@ public abstract class PermissionService {
     public abstract void insert(Permission permissions);
 
     @Transactional
-    public BaseResponse insertAll(List<Permission> roles) {
-        return getPermissionDao().insertAll(roles);
+    public void insertAll(List<Permission> roles) {
+        getPermissionDao().insertAll(roles);
     }
 
-    public abstract BaseResponse update(Permission permissions);
+    public abstract void update(Permission permissions);
 
-    public abstract BaseResponse delete(int id);
+    public abstract void delete(int id);
 
     public void deleteAll() {
         getPermissionDao().deleteAll();

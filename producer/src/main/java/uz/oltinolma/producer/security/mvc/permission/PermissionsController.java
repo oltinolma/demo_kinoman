@@ -7,7 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import uz.oltinolma.producer.security.common.BaseResponses;
+import uz.oltinolma.producer.common.BaseResponses;
 import uz.oltinolma.producer.security.model.UserContext;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
@@ -52,7 +52,8 @@ public class PermissionsController {
     @ApiOperation(value = "Edit permission.", response = BaseResponse.class)
     @PutMapping(consumes = "application/json", produces = "application/json")
     public BaseResponse update(@Validated @RequestBody Permission permissions) {
-        return permissionServicePostgresImpl.update(permissions);
+        permissionServicePostgresImpl.update(permissions);
+        return baseResponses.successMessage();
     }
 
     @PreAuthorize("@SecurityPermission.hasPermission('permission.insert')")
@@ -67,7 +68,8 @@ public class PermissionsController {
     @ApiOperation(value = "Ma'lum ID lik ruxsatni o'chirish", response = BaseResponse.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = "application/json", produces = "application/json")
     public BaseResponse delete(@PathVariable("id") int id) {
-        return permissionServicePostgresImpl.delete(id);
+        permissionServicePostgresImpl.delete(id);
+        return baseResponses.successMessage();
     }
 
     public String getLogin() {

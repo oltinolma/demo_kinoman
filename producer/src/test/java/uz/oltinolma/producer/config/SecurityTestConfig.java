@@ -14,8 +14,7 @@ import static uz.oltinolma.producer.security.UserDummies.userContextForGuest;
 
 @Profile("test-security-profile")
 @SpringBootApplication(scanBasePackages={"uz.oltinolma.producer.security",
-        "uz.oltinolma.producer.mvc.controller", "uz.oltinolma.producer.rabbitmq"})
-//@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, value = ExcludeFromTests.class))
+        "uz.oltinolma.producer.mvc.controller", "uz.oltinolma.producer.rabbitmq", "uz.oltinolma.producer.common"})
 public class SecurityTestConfig {
     @Component
     public class TokenHelper {

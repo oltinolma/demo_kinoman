@@ -3,12 +3,10 @@ package uz.oltinolma.producer.security.mvc.role.dao;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import uz.oltinolma.producer.security.common.LogUtil;
-import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
+import uz.oltinolma.producer.common.LogUtil;
 import uz.oltinolma.producer.security.mvc.role.Role;
 
 import java.util.HashMap;

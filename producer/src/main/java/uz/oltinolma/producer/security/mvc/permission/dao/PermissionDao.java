@@ -2,14 +2,13 @@ package uz.oltinolma.producer.security.mvc.permission.dao;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import uz.oltinolma.producer.security.common.BaseResponses;
-import uz.oltinolma.producer.security.common.LogUtil;
-import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
+import uz.oltinolma.producer.common.LogUtil;
+import uz.oltinolma.producer.common.Status404Exception;
+import uz.oltinolma.producer.common.Status500Exception;
 import uz.oltinolma.producer.security.mvc.permission.Permission;
 
 import javax.sql.DataSource;
@@ -20,8 +19,6 @@ public abstract class PermissionDao {
     private static final Logger logger = LogUtil.getInstance();
     @Autowired
     private PermissionsExtractor extractor;
-    @Autowired
-    protected BaseResponses baseResponses;
     @Autowired
     public abstract void setDataSource(DataSource dataSource);
     
@@ -54,46 +51,40 @@ public abstract class PermissionDao {
         });
     }
     /**@Override in order to use */
-    public BaseResponse insertAll(List<Permission> permissions) {
+    public void insertAll(List<Permission> permissions) {
         throw new UnsupportedOperationException();
     }
 
     public abstract int insert(Permission permissions);
 
-    public BaseResponse update(Permission permission) {
+    public void update(Permission permission) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("id", permission.getId());
         map.put("name", permission.getName());
         map.put("notes", permission.getNotes());
         String sql = "UPDATE permission SET name=:name, notes=:notes WHERE id=:id";
-        BaseResponse baseResponse = new BaseResponse();
         try {
-            int i = this.getTemplate().update(sql, map);
-            if (i == 0) {
-                throw new RuntimeException("Permission not found for the given id. ID = " + permission.getId());
+            int affectedRows = this.getTemplate().update(sql, map);
+            boolean nothingUpdated = affectedRows == 0;
+            if (nothingUpdated) {
+                logger.error("Permission not found for the given id. ID = " + permission.getId());
+                throw new Status404Exception("Something went wrong , we'll fix it soon");
             }
-        } catch (DuplicateKeyException d) {
-            logger.error("Couldn't update the permission.", d);
-            return baseResponses.duplicateKeyErrorResponse(permission.getName());
         } catch (Exception e) {
             logger.error("Couldn't update the permission.", e);
-            return baseResponses.serverErrorResponse();
+            throw e;
         }
-        return baseResponse;
     }
 
-    public BaseResponse delete(int id) {
+    public void delete(int id) {
         String sql = "DELETE FROM permission WHERE id=:id";
         SqlParameterSource parameterSource = new MapSqlParameterSource("id", id);
-        BaseResponse baseResponse = new BaseResponse();
-
         try {
             this.getTemplate().update(sql, parameterSource);
         } catch (Exception e) {
             logger.error("Couldn't delete the permission.", e);
-            return baseResponses.serverErrorResponse();
+            throw new Status500Exception("Something went wrong. We will fix it soon!");
         }
-        return baseResponse;
     }
 
     public void deleteAll() {

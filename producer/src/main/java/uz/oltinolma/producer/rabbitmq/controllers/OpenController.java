@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import uz.oltinolma.producer.rabbitmq.generics.Message;
-import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.common.LogUtil;
 
 @Controller
 @RequestMapping("/open")

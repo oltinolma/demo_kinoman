@@ -1,4 +1,4 @@
-package uz.oltinolma.producer.security.common;
+package uz.oltinolma.producer.common;
 
 import org.springframework.stereotype.Component;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
@@ -16,6 +16,13 @@ public class BaseResponses {
         BaseResponse errorResponse = new BaseResponse();
         errorResponse.setStatus(500);
         errorResponse.setMessage("Server error!");
+        return errorResponse;
+    }
+
+    public BaseResponse serverErrorResponse(int status, String message) {
+        BaseResponse errorResponse = new BaseResponse();
+        errorResponse.setStatus(status);
+        errorResponse.setMessage(message);
         return errorResponse;
     }
 
