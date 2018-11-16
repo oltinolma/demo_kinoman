@@ -1,5 +1,6 @@
 package uz.oltinolma.producer.security.mvc.permission;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -123,27 +124,33 @@ class PermissionsControllerTest {
                 Permission per = new Permission().setId(1).setName("updated permission name").setNotes("dfdfdfd");
                 mockMvc.perform(put("/permissions")
                         .content(mapper.writeValueAsString(per))
-                        .headers(headers())).andExpect(status().isOk());
-
+                        .headers(headers())).andExpect(status().isOk()).andDo(print());
 
                 orderVerifier.verify(controllerSpy).update(any());
                 orderVerifier.verify(servicePostgresImplSpy).update(any());
                 orderVerifier.verify(serviceH2ImplSpy).update(any());
                 orderVerifier.verify(DaoH2ImplSpy).update(any());
                 orderVerifier.verify(DaoPostgresImplSpy).update(any());
+            }
 
+            @Test
+            @DisplayName("PUT request updates given permission.")
+            public void temp() {
+                //TODO implemewnt it!
+                System.out.println("serviceH2ImplSpy");
                 serviceH2ImplSpy.list().forEach(p-> System.out.println("h2 " + p));
                 System.out.println("servicePostgresImplSpy");
                 servicePostgresImplSpy.list().forEach(p-> System.out.println("pg " + p));
             }
 
             @Test
-            @DisplayName("PUT request updates given permission.")
-            public void temp() {
-                System.out.println("serviceH2ImplSpy");
-                serviceH2ImplSpy.list().forEach(p-> System.out.println("h2 " + p));
-                System.out.println("servicePostgresImplSpy");
-                servicePostgresImplSpy.list().forEach(p-> System.out.println("pg " + p));
+            @DisplayName("404 if worng id is passed for the permission to be updated.")
+            void notUpdatedMeansNotFound() throws Exception {
+                final int wrongId = Integer.MAX_VALUE;
+                Permission permissionThatDoesNotExist = new Permission().setId(wrongId).setName("updated permission name").setNotes("dfdfdfd");
+                mockMvc.perform(put("/permissions")
+                        .content(mapper.writeValueAsString(permissionThatDoesNotExist))
+                        .headers(headers())).andExpect(status().isNotFound());
             }
         }
 
@@ -156,6 +163,8 @@ class PermissionsControllerTest {
                     given(serviceH2ImplSpy.get(p.getId())).willReturn(p);
                 }
             }
+
+            //TODO test reads from h2 only
 
             @Test
             @DisplayName("getList() returns all permissions")

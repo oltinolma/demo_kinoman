@@ -8,8 +8,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
-import uz.oltinolma.producer.security.common.ErrorCode;
-import uz.oltinolma.producer.security.common.ErrorResponse;
+import uz.oltinolma.producer.common.ErrorCode;
+import uz.oltinolma.producer.common.ErrorResponse;
 import uz.oltinolma.producer.security.exceptions.AuthMethodNotSupportedException;
 import uz.oltinolma.producer.security.exceptions.JwtExpiredTokenException;
 

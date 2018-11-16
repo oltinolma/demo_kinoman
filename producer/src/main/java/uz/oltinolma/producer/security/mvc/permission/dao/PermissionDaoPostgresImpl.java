@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.common.LogUtil;
 import uz.oltinolma.producer.security.mvc.permission.Permission;
 
 import javax.annotation.Resource;

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import uz.oltinolma.producer.security.common.BaseResponses;
+import uz.oltinolma.producer.common.BaseResponses;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.role.Role;
 import uz.oltinolma.producer.security.mvc.rolepermissions.service.RolesPermissionsService;

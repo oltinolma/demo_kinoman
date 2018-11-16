@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.common.LogUtil;
 import uz.oltinolma.producer.security.model.UserContext;
 import uz.oltinolma.producer.security.mvc.permission.service.PermissionService;
 import uz.oltinolma.producer.security.mvc.user.User;

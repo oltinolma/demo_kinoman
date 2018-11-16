@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import uz.oltinolma.producer.security.common.LogUtil;
+import uz.oltinolma.producer.common.LogUtil;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 import uz.oltinolma.producer.security.mvc.permission.Permission;
 
@@ -30,7 +30,7 @@ public class PermissionDaoH2Impl extends PermissionDao {
     }
 
     @Override
-    public BaseResponse insertAll(List<Permission> permissions) {
+    public void insertAll(List<Permission> permissions) {
         String sql = "INSERT INTO permission(id, name, notes) VALUES (:id, :name, :notes)";
         Map<String, Object>[] batch = new HashMap[permissions.size()];
         for (int i = 0; i < permissions.size(); i++) {
@@ -45,9 +45,8 @@ public class PermissionDaoH2Impl extends PermissionDao {
             template.batchUpdate(sql, batch);
         } catch (Exception e) {
             logger.error("Couldn't insert permissions into h2.", e);
-            return baseResponses.serverErrorResponse();
+            throw new RuntimeException("Couldn't insert permissions into h2.", e);
         }
-        return baseResponses.successMessage();
     }
 
     public int insert(Permission permissions) {

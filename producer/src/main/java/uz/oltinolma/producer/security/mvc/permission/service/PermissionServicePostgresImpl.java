@@ -31,13 +31,13 @@ public class PermissionServicePostgresImpl extends PermissionService {
         permissionServiceH2Impl.insert(permissions);
     }
 
-    public BaseResponse update(Permission permissions) {
+    public void update(Permission permissions) {
         permissionServiceH2Impl.update(permissions);
-        return permissionDao.update(permissions);
+        permissionDao.update(permissions);
     }
 
-    public BaseResponse delete(int id) {
+    public void delete(int id) {
         permissionServiceH2Impl.delete(id);
-        return permissionDao.delete(id);
+        permissionDao.delete(id);
     }
 }

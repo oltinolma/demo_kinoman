@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uz.oltinolma.producer.security.common.BaseResponses;
+import uz.oltinolma.producer.common.BaseResponses;
 import uz.oltinolma.producer.security.model.exceptionModels.BaseResponse;
 
 @RestController

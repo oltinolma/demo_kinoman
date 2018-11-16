@@ -1,4 +1,4 @@
-package uz.oltinolma.producer.security.common;
+package uz.oltinolma.producer.common;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

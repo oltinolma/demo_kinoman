@@ -11,8 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import uz.oltinolma.producer.security.common.LogUtil;
-import uz.oltinolma.producer.security.common.WebUtil;
+import uz.oltinolma.producer.common.LogUtil;
+import uz.oltinolma.producer.common.WebUtil;
 import uz.oltinolma.producer.security.exceptions.AuthMethodNotSupportedException;
 
 import javax.servlet.FilterChain;

@@ -23,12 +23,12 @@ public class PermissionServiceH2Impl extends PermissionService {
         permissionDao.insert(permissions);
     }
 
-    public BaseResponse update(Permission permissions) {
-        return permissionDao.update(permissions);
+    public void update(Permission permissions) {
+         permissionDao.update(permissions);
     }
 
-    public BaseResponse delete(int id) {
-        return permissionDao.delete(id);
+    public void delete(int id) {
+        permissionDao.delete(id);
     }
 
 }
